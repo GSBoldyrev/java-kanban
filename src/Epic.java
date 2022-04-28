@@ -1,13 +1,12 @@
 import java.util.ArrayList;
 
 public class Epic extends Task {
-ArrayList<SubTask> tasks = new ArrayList<>();
+    ArrayList<SubTask> tasks = new ArrayList<>();
 
     public Epic(String name, String description) {
-        super();
-        super.setName(name);
-        super.setDescription(description);
+        super(name, description);
     }
+
 
     @Override
     public String toString() {
