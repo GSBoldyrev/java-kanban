@@ -6,8 +6,18 @@ public class TaskManager {
     private final HashMap<Integer, SubTask> subTasks = new HashMap<>();
     private final HashMap<Integer, Epic> epics = new HashMap<>();
     private int id = 0;
+    /*
+    Здесь исправил почти все имена, сократил "лапшу", перенес геттеры в конец. Появился метод для генератора id.
+    Во всем разобрался, кроме нескольких моментов. Не знаю, нужны ли в Enum методы, дополнительные поля, или три
+    константы - это все необходимое? Ну и про сокращение лапши через создание переменной Epic epic. Сделал методом
+    тыка. Подставил переменную - работает. Но прям четкого и твердого понятия чувствую что нет. Мы создаем новую
+    переменную и присваиваем ей значение той, что лежит в Хешмапе. И дальше оперируем с новой, а меняется получается
+    и та, что в хешмапе. Не понимаю четко, почему так происходит. А догадки выставлять за истину побаиваюсь. Из-за
+    того, что обе хранят ссылку на одну область, где и лежат все данные?
+    Ох и расписал... Вообще не знаю, можно ли в комментариях расписывать вопросы и мнения. Слышал другие так делают,
+    а я думал что комментарии в этих проектах как и в работе должны только пояснять код.*/
 
-    // 2. Удаление всех задач
+    // Удаление всех задач
     public void deleteAllTasks() {
         tasks.clear();
     }
@@ -24,7 +34,7 @@ public class TaskManager {
         subTasks.clear(); // При удалении эпиков также удаляются и подзадачи
     }
 
-    // 4. Создание новой задачи
+    // Создание новой задачи
     public void createTask(Task task) {
         if (task != null) {
             int id = idGenerator();
@@ -33,11 +43,11 @@ public class TaskManager {
         }
     }
 
-    public void createEpicTask(Epic epic) {
+    public void createEpic(Epic epic) {
         if (epic != null) {
             int id = idGenerator();
             epic.setId(id);
-            epic.setStatus("NEW");   // Новый эпик при создании не содержит подзадач, поэтому имеет статус NEW
+            epic.setStatus(Status.NEW);   // Новый эпик при создании не содержит подзадач, поэтому имеет статус NEW
             epics.put(id, epic);
         }
     }
@@ -51,32 +61,32 @@ public class TaskManager {
             Epic epic = epics.get(i);
             epic.tasks.add(subTask); // добавление подзадачи в список эпика
             switch (subTask.getStatus()) { //при создании подзадачи может поменяться статус эпика
-                case "NEW":
-                    if (epic.getStatus().equals("DONE")) {
-                        epic.setStatus("IN_PROGRESS");
+                case NEW:
+                    if (epic.getStatus() == Status.DONE) {
+                        epic.setStatus(Status.IN_PROGRESS);
                     }
                     break;
-                case "IN_PROGRESS":
-                    epic.setStatus("IN_PROGRESS");
+                case IN_PROGRESS:
+                    epic.setStatus(Status.IN_PROGRESS);
                     break;
-                case "DONE":
+                case DONE:
                     int counter = 0; // считаем количество задач со статусом DONE в списке эпика
                     for (SubTask task : epic.tasks) {
-                        if (task.getStatus().equals("DONE")) {
+                        if (task.getStatus() == Status.DONE) {
                             counter++;
                         }
                     }
                     if (counter == epic.tasks.size()) {
-                        epic.setStatus("DONE"); // если все задачи "DONE", меняем статус эпика на DONE
+                        epic.setStatus(Status.DONE); // если все задачи "DONE", меняем статус эпика на DONE
                     } else {
-                        epic.setStatus("IN_PROGRESS"); // в противном случаем эпик будет IN_PROGRESS
+                        epic.setStatus(Status.IN_PROGRESS); // в противном случаем эпик будет IN_PROGRESS
                     }
                     break;
             }
         }
     }
 
-    // 5. Обновление существующей задачи
+    // Обновление существующей задачи
     public void updateTask(Task task) {
         int id = task.getId();
         if (tasks.containsKey(id)) {
@@ -93,35 +103,35 @@ public class TaskManager {
             epic.tasks.removeIf(task -> task.getId() == subTask.getId());// удаление старой версии подзадачи
             epic.tasks.add(subTask); // добавление новой версии подзадачи в список эпика
             switch (subTask.getStatus()) {
-                case "NEW":
-                    if (epic.getStatus().equals("DONE")) {
-                        epic.setStatus("IN_PROGRESS");
+                case NEW:
+                    if (epic.getStatus() == Status.DONE) {
+                        epic.setStatus(Status.IN_PROGRESS);
                     }
                     break;
-                case "IN_PROGRESS":
-                    epic.setStatus("IN_PROGRESS");
+                case IN_PROGRESS:
+                    epic.setStatus(Status.IN_PROGRESS);
                     break;
-                case "DONE":
+                case DONE:
                     int counter = 0; // считаем количество задач со статусом DONE в списке эпика
                     for (SubTask task : epic.tasks) {
-                        if (task.getStatus().equals("DONE")) {
+                        if (task.getStatus() == Status.DONE) {
                             counter++;
                         }
                     }
                     if (counter == epic.tasks.size()) {
-                        epic.setStatus("DONE"); // если все задачи "DONE", меняем статус эпика на DONE
+                        epic.setStatus(Status.DONE); // если все задачи "DONE", меняем статус эпика на DONE
                     } else {
-                        epic.setStatus("IN_PROGRESS"); // в противном случаем эпик будет IN_PROGRESS
+                        epic.setStatus(Status.IN_PROGRESS); // в противном случаем эпик будет IN_PROGRESS
                     }
                     break;
             }
         }
     }
 
-    public void updateEpicTask(Epic epic) {
+    public void updateEpic(Epic epic) {
         int id = epic.getId();
         if (epics.containsKey(id)) {
-            epic.setStatus("NEW");
+            epic.setStatus(Status.NEW);
             epics.put(id, epic);
             for (int i : subTasks.keySet()) {
                 if (subTasks.get(i).getEpicId() == id) {
@@ -131,7 +141,7 @@ public class TaskManager {
         }
     }
 
-    // 6. Удаление задачи по идентификатору
+    // Удаление задачи по идентификатору
     public void removeTask(int id) {
         tasks.remove(id);
     }
@@ -140,21 +150,21 @@ public class TaskManager {
         int i = subTasks.get(id).getEpicId(); //получаем идентификатор эпика, к которому относится удаляемая задача
         Epic epic = epics.get(i);
         epic.tasks.removeIf(task -> task.getId() == subTasks.get(id).getId());// удалеяем подзадачу из эпика
-        int counterNEW = 0;
-        int counterDONE = 0;// считаем количество задач со статусом DONE и NEW в эпике из которого удалили подзадачу
+        int counterNew = 0;
+        int counterDone = 0;// считаем количество задач со статусом DONE и NEW в эпике из которого удалили подзадачу
         for (SubTask task : epic.tasks) {
-            if (task.getStatus().equals("DONE")) {
-                counterDONE++;
-            } else if (task.getStatus().equals("NEW")) {
-                counterNEW++;
+            if (task.getStatus() == Status.DONE) {
+                counterDone++;
+            } else if (task.getStatus() == Status.NEW) {
+                counterNew++;
             }
         } // Меняем статус эпика после удаления задачи:
-        if (counterDONE == epic.tasks.size()) {
-            epic.setStatus("DONE"); //если все оставшиеся подзадачи имеют статус DONE, эпику ставим DONE
-        } else if (counterNEW == epic.tasks.size()) {
-            epic.setStatus("NEW"); //если все оставшиеся подзадачи имеют статус NEW, эпику ставим NEW
+        if (counterDone == epic.tasks.size()) {
+            epic.setStatus(Status.DONE); //если все оставшиеся подзадачи имеют статус DONE, эпику ставим DONE
+        } else if (counterNew == epic.tasks.size()) {
+            epic.setStatus(Status.NEW); //если все оставшиеся подзадачи имеют статус NEW, эпику ставим NEW
         } else {
-            epic.setStatus("IN_PROGRESS"); //в противном случае - IN_PROGRESS
+            epic.setStatus(Status.IN_PROGRESS); //в противном случае - IN_PROGRESS
         }
         subTasks.remove(id);
     }
@@ -168,7 +178,7 @@ public class TaskManager {
         epics.remove(id);
     }
 
-    // 1. Получение списка всех задач
+    // Получение списка всех задач
     public HashMap<Integer, Task> getAllTasks() {
         return tasks;
     }
@@ -181,7 +191,7 @@ public class TaskManager {
         return epics;
     }
 
-    // 3. Получение задачи по индентификатору
+    // Получение задачи по индентификатору
     public Task getTask(int id) {
         return tasks.get(id);
     }
@@ -194,7 +204,7 @@ public class TaskManager {
         return epics.get(id);
     }
 
-    // 7. Полученмие списка всех подзадач Эпика
+    // Полученмие списка всех подзадач Эпика
     public ArrayList<SubTask> getSubTasksFromEpic(int id) {
         Epic epic = epics.get(id);
         return epic.tasks;
