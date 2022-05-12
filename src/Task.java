@@ -3,7 +3,7 @@ import java.util.Objects;
 public class Task {
     private String name;
     private String description;
-    private Status status; // статус теперь Enum
+    private Status status;
     private int id;
 
 
@@ -13,7 +13,7 @@ public class Task {
         this.status = status;
     }
 
-    public Task(String name, String description) { // конструктормбудут использовать Эпики. нет доступа к статусу
+    public Task(String name, String description) { // конструктор для Эпиков
         this.name = name;
         this.description = description;
     }
