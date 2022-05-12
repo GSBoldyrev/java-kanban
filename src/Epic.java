@@ -1,28 +1,43 @@
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class Epic extends Task {
-    ArrayList<SubTask> tasks = new ArrayList<>();
+    private List<SubTask> subTasks = new ArrayList<>();
 
     public Epic(String name, String description) {
         super(name, description);
     }
 
-
     @Override
     public String toString() {
         return "EpicTask{" +
-                "tasks=" + tasks +
+                "tasks=" + subTasks +
                 ", name='" + super.getName() + '\'' +
                 ", description='" + super.getDescription() + '\'' +
                 ", status='" + super.getStatus() + '\'' +
                 '}';
     }
 
-    public ArrayList<SubTask> getTasks() {
-        return tasks;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Epic epic = (Epic) o;
+        return subTasks.equals(epic.subTasks);
     }
 
-    public void setTasks(ArrayList<SubTask> tasks) {
-        this.tasks = tasks;
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), subTasks);
+    }
+
+    public List<SubTask> getSubTasks() {
+        return subTasks;
+    }
+
+    public void setSubTasks(List<SubTask> subTasks) {
+        this.subTasks = subTasks;
     }
 }

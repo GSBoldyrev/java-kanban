@@ -2,13 +2,16 @@ public class Main {
 
     public static void main(String[] args) {
         /*
-        Привет!
-        Такие странные ощущения, вроде все сделал по ТЗ, вроде все работает. Но кажется, будто что-то не так, уж больно
-        быстро и просто все сделалось. Не на сто процентов уверен в том, какие методы должен содержать интерфейс
-        TaskManager. Особенно с методом getHistory(). Получается он у нас в двух интерфейсах объявлен, это нормально?
-        Но ведь если его не объявить в интерфейсе TaskManager, то мы не будем иметь к нему доступа при создании
-        менеджера через getDefault.
-        В общем, жду разноса :)
+        Клево! Спасибо тебе как всегда, за столь развернутое ревью.
+        Сидел и скрипел мозгами насчет магической десятки. Доскрипелся до того, что решил вынести в константу. Красиво
+        вроде и как у взрослых получилось.
+        Использовать интерфейс List в данном случае - задел на будущее, или просто хорошая практика создавать переменные
+        типа интерфейса, а не класса, его имплементирующего?
+        По поводу генератора ID. Идея не давала сделать его мне приватным, потому что он публичный в интерфейсе. Тут я
+        и понял, что в интерфейсе то он вроде как и не нужен вовсе. А если нужен, разве мы можем тогда сделать его
+        приватным? Вроде нет.
+        Ну а получение задач списком а не картой - отдельное тебе спасибо! теперь умею переносить данные из карты в
+        список одной строкой))
          */
 
         TaskManager inMemoryTaskManager = Managers.getDefault();
@@ -23,16 +26,15 @@ public class Main {
         SubTask task7 = new SubTask("Агрикола", "купить", Status.NEW, 3);
         SubTask task8 = new SubTask("Посуда", "вымыть тщательно", Status.NEW, 4);
 
-
-        inMemoryTaskManager.createTask(task0);
-        inMemoryTaskManager.createTask(task1);
-        inMemoryTaskManager.createTask(task2);
-        inMemoryTaskManager.createEpic(task3);
-        inMemoryTaskManager.createEpic(task4);
-        inMemoryTaskManager.createSubTask(task5);
-        inMemoryTaskManager.createSubTask(task6);
-        inMemoryTaskManager.createSubTask(task7);
-        inMemoryTaskManager.createSubTask(task8);
+        inMemoryTaskManager.addTask(task0);
+        inMemoryTaskManager.addTask(task1);
+        inMemoryTaskManager.addTask(task2);
+        inMemoryTaskManager.addEpic(task3);
+        inMemoryTaskManager.addEpic(task4);
+        inMemoryTaskManager.addSubTask(task5);
+        inMemoryTaskManager.addSubTask(task6);
+        inMemoryTaskManager.addSubTask(task7);
+        inMemoryTaskManager.addSubTask(task8);
 
         inMemoryTaskManager.getTask(1);
         inMemoryTaskManager.getEpic(4);
@@ -42,10 +44,5 @@ public class Main {
         inMemoryTaskManager.getEpic(4);
 
         System.out.println(inMemoryTaskManager.getHistory());
-
-
-
-
-
     }
 }

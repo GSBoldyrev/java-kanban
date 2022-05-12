@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public interface TaskManager {
@@ -12,11 +10,11 @@ public interface TaskManager {
     void deleteAllEpics();
 
     // Создание новой задачи
-    void createTask(Task task);
+    void addTask(Task task);
 
-    void createEpic(Epic epic);
+    void addEpic(Epic epic);
 
-    void createSubTask(SubTask subTask);
+    void addSubTask(SubTask subTask);
 
     // Обновление существующей задачи
     void updateTask(Task task);
@@ -34,11 +32,11 @@ public interface TaskManager {
     void removeEpic(int id);
 
     // Получение списка всех задач
-    HashMap<Integer, Task> getAllTasks();
+    List<Task> getAllTasks();
 
-    HashMap<Integer, SubTask> getAllSubTasks();
+    List<Task> getAllSubTasks();
 
-    HashMap<Integer, Epic> getAllEpics();
+    List<Task> getAllEpics();
 
     // Получение задачи по индентификатору
     Task getTask(int id);
@@ -48,10 +46,7 @@ public interface TaskManager {
     Epic getEpic(int id);
 
     // Полученмие списка всех подзадач Эпика
-    ArrayList<SubTask> getSubTasksFromEpic(int id);
-
-    // Генератор ID
-    int idGenerator();
+    List<SubTask> getSubTasksFromEpic(int id);
 
     // Просмотр последних десяти задач
     List<Task> getHistory();
