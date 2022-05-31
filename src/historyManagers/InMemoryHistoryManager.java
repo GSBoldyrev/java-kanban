@@ -1,34 +1,35 @@
+package historyManagers;
+
+import tasks.Task;
+
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private int size = 0; // размер двусвязного списка
     private Node head; // начало списка
     private Node tail; // конец списка
-    private final Map<Integer, Node> history = new HashMap<>(); // теперь хранится здесь
+    private final Map<Integer, Node> history = new HashMap<>(); // история теперь хранится здесь
 
     // добавление новой задачи в конец двусвязного списка
     public void linkLast (Task task) {
-        final Node oldTail = tail;
-        final Node newTail = new Node(task, oldTail, null);
-        tail = newTail;
-        if (oldTail == null) {
+        final Node newTail = new Node(task, tail, null);
+        if (head == null) {
             head = newTail;
         } else {
-            oldTail.next = newTail;
+            tail.next = newTail;
         }
-        size++;
+        tail = newTail;
     }
 
-    // метод беред задачи из двусвязного списка и помещает в возвращаемый ArrayList
-    // при тестах метод выдавал ошибку NullPointerException, поэтому добавил проверку на null в цикле
-    // не уверенб что это лучшие и правильный метод, поэтому жду комментариев :)
+    // С применением цикла while и проверкой на null стало гораздо читабельнее и красивее!
+    // И я правильно сделал, что удалил вообще переменную size? Кажется, что надобность в ней отпала
     public List<Task> getTasks() {
         List<Task> tasks = new ArrayList<>();
         Node currentNode = head; // начинаем обход списка с головы
-        for (int i = 0; i < size && (currentNode != null); i++) {
+        while (currentNode != null) {
             tasks.add(currentNode.task);
             currentNode = currentNode.next; // берем следующий узел
         }
@@ -49,7 +50,6 @@ public class InMemoryHistoryManager implements HistoryManager {
                 head = node.next;
             }
         }
-        size--;
     }
 
     @Override

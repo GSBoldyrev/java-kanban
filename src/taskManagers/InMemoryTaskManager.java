@@ -1,3 +1,12 @@
+package taskManagers;
+
+import historyManagers.HistoryManager;
+import misc.Managers;
+import tasks.Epic;
+import tasks.Status;
+import tasks.SubTask;
+import tasks.Task;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -149,23 +158,17 @@ public class InMemoryTaskManager implements TaskManager {
         subTasks.remove(id);
     }
 
-    // Этот метод при тестах выдавал ConcurrentModificationException, причем не помню, чтобы это было раньше...
-    // Почитал, внес изменения. Теперь при итерации по мапе подзадач собираю id всех кандидатом на удаление в список
-    // И потом отдельно удаляю их. Опять же не знаю, правильно ли это, надеюсь на развернутый совет по теме! ;)
     @Override
     public void removeEpic(int id) {
+        Epic removedEpic = epics.remove(id);
+        if (removedEpic == null) {
+            return;
+        }
         historyManager.remove(id);
-        List<Integer> toRemove = new ArrayList<>(); // список для подзадач на удаление
-        for (int i : subTasks.keySet()) { // Удаление всех подзадач, которые относятся к удаляемому эпику
-            if (subTasks.get(i).getEpicId() == id) {
-                historyManager.remove(subTasks.get(i).getId()); // подзадача удаляется из истории
-                toRemove.add(i); // подзадача, которую нужно удалить, добавляется в список на удаление
-            }
+        for (SubTask subTask : removedEpic.getSubTasks()) {
+            subTasks.remove(subTask.getId());
+            historyManager.remove(subTask.getId());
         }
-        for (Integer idToRemove: toRemove) {
-            subTasks.remove(idToRemove);
-        }
-        epics.remove(id);
     }
 
     // Получение списка всех задач

@@ -1,3 +1,7 @@
+package historyManagers;
+
+import tasks.Task;
+
 public class Node {
     public Task task;
     public Node previous;

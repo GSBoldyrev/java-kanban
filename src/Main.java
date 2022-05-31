@@ -1,11 +1,22 @@
+import misc.Managers;
+import taskManagers.TaskManager;
+import tasks.Epic;
+import tasks.Status;
+import tasks.SubTask;
+import tasks.Task;
+
 public class Main {
 
     public static void main(String[] args) {
         /*
-        Привет! Ну вот, я уже на работе ,посреди Атлантики. Пока что, здесь учиться даже легче, чем дома, никто не
-        отвлекает :). Задание показалось очень интересным, но вот в двух методах возникли серьезные вопросы, которые
-        я расписал в комментариях к ним. Еще метод на удаление узла вызывает сомнения, кажется, что можно было сделать
-        лучше. В общем, как всегда, жду разноса!))
+        Да, работаю штурманом в море. Решил наконец вылезти на сушу и быть всегда с семьей, потому и учусь...
+        Спасибо за замечания, с кодом конечно ты меня побаловал, но прежде чем его просто копировать, я разобрался.
+        Как сам не догадался, что по списку подзадач эпика проходить гораздо удобнее! А по тестам в мейне, не знаю.
+        Еще раз пересмотрел ТЗ - в тестах выполняю все пункты, которые спрашивают, ну а для себя делал еще больше.
+        Главное - под конец. Я уже начал задумывать про разбивку по пакетам, но немного этого побаивался. Почитал
+        рекомендации, документацию. Все что почерпнул - называть с маленькой буквы и в пакет помещать по смыслу. С
+        обратным доменным именем я думаю в нашем случае не актуально ведь? Разбил вроде по пакетам так, как видел
+        логичным, кроме класса Managers... Не додумался куда его засунуть и сделал пакет misc...
          */
 
         TaskManager inMemoryTaskManager = Managers.getDefault();
@@ -39,6 +50,13 @@ public class Main {
         inMemoryTaskManager.getTask(1);
         inMemoryTaskManager.getEpic(3);
         inMemoryTaskManager.getTask(0);
+        System.out.println(inMemoryTaskManager.getHistory());
+        System.out.println();
+
+        inMemoryTaskManager.getTask(0);
+        inMemoryTaskManager.getEpic(2);
+        inMemoryTaskManager.getTask(0);
+        inMemoryTaskManager.getSubTask(4);
         System.out.println(inMemoryTaskManager.getHistory());
         System.out.println();
 
