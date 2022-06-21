@@ -7,9 +7,13 @@ import java.util.Objects;
 public class Epic extends Task {
     private List<SubTask> subTasks = new ArrayList<>();
 
+
     public Epic(String name, String description) {
         super(name, description);
+        super.setType(Type.EPIC);
     }
+
+
 
     @Override
     public String toString() {
@@ -42,4 +46,6 @@ public class Epic extends Task {
     public void setSubTasks(List<SubTask> subTasks) {
         this.subTasks = subTasks;
     }
+
+
 }

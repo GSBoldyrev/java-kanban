@@ -5,10 +5,20 @@ import java.util.Objects;
 public class SubTask extends Task {
     private int epicId;
 
+
     public SubTask(String name, String description, Status status, int epicId) {
         super(name, description, status);
+        super.setType(Type.SUBTASK);
+        this.epicId = epicId;
+
+    }
+
+    public SubTask(String name, String description, int epicId) {
+        super(name, description);
+        super.setType(Type.SUBTASK);
         this.epicId = epicId;
     }
+
 
     @Override
     public String toString() {
@@ -41,4 +51,6 @@ public class SubTask extends Task {
     public void setEpicId(int epicId) {
         this.epicId = epicId;
     }
+
+
 }

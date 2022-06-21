@@ -3,6 +3,7 @@ package tasks;
 import java.util.Objects;
 
 public class Task {
+    private Type type = Type.TASK;
     private String name;
     private String description;
     private Status status;
@@ -18,6 +19,13 @@ public class Task {
     public Task(String name, String description) { // конструктор для Эпиков
         this.name = name;
         this.description = description;
+    }
+
+    public Task(Type type, String name, String description, int id) {
+        this.type = type;
+        this.name = name;
+        this.description = description;
+        this.id = id;
     }
 
     @Override
@@ -72,5 +80,13 @@ public class Task {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 }
