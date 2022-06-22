@@ -1,42 +1,41 @@
-package taskManagers;
+package task_managers;
 
 import tasks.Epic;
 import tasks.SubTask;
 import tasks.Task;
 
-import java.io.IOException;
 import java.util.List;
 
 public interface TaskManager {
 
     // Удаление всех задач
-    void deleteAllTasks() throws IOException;
+    void deleteAllTasks();
 
-    void deleteAllSubTasks() throws IOException;
+    void deleteAllSubTasks();
 
-    void deleteAllEpics() throws IOException;
+    void deleteAllEpics();
 
     // Создание новой задачи
-    void addTask(Task task) throws IOException;
+    void addTask(Task task);
 
-    void addEpic(Epic epic) throws IOException;
+    void addEpic(Epic epic);
 
-    void addSubTask(SubTask subTask) throws IOException;
+    void addSubTask(SubTask subTask);
 
     // Обновление существующей задачи
-    void updateTask(Task task) throws IOException;
+    void updateTask(Task task);
 
-    void updateSubTask(SubTask subTask) throws IOException;
+    void updateSubTask(SubTask subTask);
 
 
-    void updateEpic(Epic epic) throws IOException;
+    void updateEpic(Epic epic);
 
     // Удаление задачи по идентификатору
-    void removeTask(int id) throws IOException;
+    void removeTask(int id);
 
-    void removeSubTask(int id) throws IOException;
+    void removeSubTask(int id);
 
-    void removeEpic(int id) throws IOException;
+    void removeEpic(int id);
 
     // Получение списка всех задач
     List<Task> getAllTasks();

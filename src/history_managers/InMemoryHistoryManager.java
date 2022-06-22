@@ -1,4 +1,4 @@
-package historyManagers;
+package history_managers;
 
 import tasks.Task;
 
@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.Map;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private Node head; // начало списка
-    private Node tail; // конец списка
-    private final Map<Integer, Node> history = new HashMap<>(); // история теперь хранится здесь
+    private Node head;
+    private Node tail;
+    private final Map<Integer, Node> history = new HashMap<>();
 
     // добавление новой задачи в конец двусвязного списка
-    public void linkLast (Task task) {
+    public void linkLast(Task task) {
         final Node newTail = new Node(task, tail, null);
         if (head == null) {
             head = newTail;
@@ -24,20 +24,18 @@ public class InMemoryHistoryManager implements HistoryManager {
         tail = newTail;
     }
 
-    // С применением цикла while и проверкой на null стало гораздо читабельнее и красивее!
-    // И я правильно сделал, что удалил вообще переменную size? Кажется, что надобность в ней отпала
     public List<Task> getTasks() {
         List<Task> tasks = new ArrayList<>();
-        Node currentNode = head; // начинаем обход списка с головы
+        Node currentNode = head;
         while (currentNode != null) {
             tasks.add(currentNode.task);
-            currentNode = currentNode.next; // берем следующий узел
+            currentNode = currentNode.next;
         }
         return tasks;
     }
 
     // метод удаляет узел из списка
-    public void removeNode (Node node) {
+    public void removeNode(Node node) {
         if (node.previous != null) {
             node.previous.next = node.next;
             if (node.next == null) {
@@ -54,8 +52,8 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void add(Task task) {
-        remove(task.getId()); // если в истории уже есть задача с таким же id, удаляем ее
-        linkLast(task); // потом добавляем в двусвязный список и в HashMap
+        remove(task.getId());
+        linkLast(task);
         history.put(task.getId(), tail);
     }
 
@@ -69,6 +67,15 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public List<Task> getHistory() {
-       return getTasks();
+        return getTasks();
+    }
+
+    public String toString() {
+        StringBuilder history = new StringBuilder();
+        for (Task task : this.getHistory()) {
+            history.append(",").append(task.getId());
+        }
+        history.delete(0, 1);
+        return history.toString();
     }
 }

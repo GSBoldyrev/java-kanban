@@ -1,5 +1,6 @@
 package tasks;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Task {
@@ -8,7 +9,7 @@ public class Task {
     private String description;
     private Status status;
     private int id;
-
+    protected final static String DELIMITER = ",";
 
     public Task(String name, String description, Status status) {
         this.name = name;
@@ -16,25 +17,14 @@ public class Task {
         this.status = status;
     }
 
-    public Task(String name, String description) { // конструктор для Эпиков
+    public Task(String name, String description) {
         this.name = name;
         this.description = description;
-    }
-
-    public Task(Type type, String name, String description, int id) {
-        this.type = type;
-        this.name = name;
-        this.description = description;
-        this.id = id;
     }
 
     @Override
     public String toString() {
-        return "Tasks.Task{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", status='" + status + '\'' +
-                '}';
+        return id + DELIMITER + type + DELIMITER + name + DELIMITER + status + DELIMITER + description + DELIMITER;
     }
 
     @Override

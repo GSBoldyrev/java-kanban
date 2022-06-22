@@ -1,10 +1,10 @@
 package tasks;
 
+import java.util.List;
 import java.util.Objects;
 
 public class SubTask extends Task {
     private int epicId;
-
 
     public SubTask(String name, String description, Status status, int epicId) {
         super(name, description, status);
@@ -19,15 +19,11 @@ public class SubTask extends Task {
         this.epicId = epicId;
     }
 
-
     @Override
     public String toString() {
-        return "Tasks.SubTask{" +
-                "memberOfEpic=" + epicId +
-                ", name='" + super.getName() + '\'' +
-                ", description='" + super.getDescription() + '\'' +
-                ", status='" + super.getStatus() + '\'' +
-                '}';
+        return super.getId() + "," + super.getType() + ","
+                + super.getName() + "," + super.getStatus()
+                + "," + super.getDescription() + "," + epicId;
     }
 
     @Override
@@ -51,6 +47,4 @@ public class SubTask extends Task {
     public void setEpicId(int epicId) {
         this.epicId = epicId;
     }
-
-
 }
