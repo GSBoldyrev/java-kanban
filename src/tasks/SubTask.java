@@ -1,29 +1,38 @@
 package tasks;
 
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class SubTask extends Task {
     private int epicId;
 
-    public SubTask(String name, String description, Status status, int epicId) {
-        super(name, description, status);
-        super.setType(Type.SUBTASK);
+    // Полная версия конструктора.
+    public SubTask(String name, String description, TaskStatus status, int epicId, int duration, LocalDateTime startTime) {
+        super(name, description, status, duration, startTime);
+        super.setType(TaskType.SUBTASK);
         this.epicId = epicId;
-
     }
 
+    // Короткая версия для тестов.
     public SubTask(String name, String description, int epicId) {
         super(name, description);
-        super.setType(Type.SUBTASK);
+        super.setType(TaskType.SUBTASK);
         this.epicId = epicId;
     }
 
     @Override
     public String toString() {
-        return super.getId() + "," + super.getType() + ","
-                + super.getName() + "," + super.getStatus()
-                + "," + super.getDescription() + "," + epicId;
+        String start = "Start time not defined";
+        String end = "End time cannot be calculated";
+        if (getStartTime() != null) {
+            start = getStartTime().format(FORMATTER);
+        }
+        if (getEndTime() != null) {
+            end = getEndTime().format(FORMATTER);
+        }
+        return getId() + DELIMITER + getType() + DELIMITER + getName() + DELIMITER + getStatus()
+                + DELIMITER + getDescription() + DELIMITER + start + DELIMITER + getDuration()
+                + DELIMITER + end + DELIMITER + epicId;
     }
 
     @Override

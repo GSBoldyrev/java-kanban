@@ -5,6 +5,7 @@ import tasks.SubTask;
 import tasks.Task;
 
 import java.util.List;
+import java.util.Set;
 
 public interface TaskManager {
 
@@ -16,26 +17,25 @@ public interface TaskManager {
     void deleteAllEpics();
 
     // Создание новой задачи
-    void addTask(Task task);
+    int addTask(Task task);
 
-    void addEpic(Epic epic);
+    int addEpic(Epic epic);
 
-    void addSubTask(SubTask subTask);
+    int addSubTask(SubTask subTask);
 
     // Обновление существующей задачи
-    void updateTask(Task task);
+    int updateTask(Task task);
 
-    void updateSubTask(SubTask subTask);
+    int updateSubTask(SubTask subTask);
 
-
-    void updateEpic(Epic epic);
+    int updateEpic(Epic epic);
 
     // Удаление задачи по идентификатору
-    void removeTask(int id);
+    Task removeTask(int id);
 
-    void removeSubTask(int id);
+    Task removeSubTask(int id);
 
-    void removeEpic(int id);
+    Task removeEpic(int id);
 
     // Получение списка всех задач
     List<Task> getAllTasks();
@@ -44,16 +44,19 @@ public interface TaskManager {
 
     List<Task> getAllEpics();
 
-    // Получение задачи по индентификатору
+    // Получение задачи по идентификатору
     Task getTask(int id);
 
     SubTask getSubTask(int id);
 
     Epic getEpic(int id);
 
-    // Полученмие списка всех подзадач Эпика
+    // Получение списка всех подзадач Эпика
     List<SubTask> getSubTasksFromEpic(int id);
 
     // Просмотр последних десяти задач
     List<Task> getHistory();
+
+    // Получение всех задач и подзадач, отсортированных по времени начала, начиная с самой ранней.
+    Set<Task> getPrioritizedTasks();
 }

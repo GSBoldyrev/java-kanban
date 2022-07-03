@@ -1,22 +1,32 @@
 package tasks;
 
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
-public class Task {
-    private Type type = Type.TASK;
+public class Task implements Comparable {
+
     private String name;
     private String description;
-    private Status status;
-    private int id;
-    protected final static String DELIMITER = ",";
+    private TaskType type = TaskType.TASK;
+    private TaskStatus status = TaskStatus.NEW;
+    private LocalDateTime startTime;
+    private int duration;
+    private int id = -1;
 
-    public Task(String name, String description, Status status) {
+    protected final static String DELIMITER = ",";
+    protected final static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm - dd.MM.yyyy");
+
+    // Полная версия конструктора
+    public Task(String name, String description, TaskStatus status, int duration, LocalDateTime startTime) {
         this.name = name;
         this.description = description;
         this.status = status;
+        this.duration = duration;
+        this.startTime = startTime;
     }
 
+    // Конструктор для Эпиков и быстрого создания задач
     public Task(String name, String description) {
         this.name = name;
         this.description = description;
@@ -24,7 +34,16 @@ public class Task {
 
     @Override
     public String toString() {
-        return id + DELIMITER + type + DELIMITER + name + DELIMITER + status + DELIMITER + description + DELIMITER;
+        String start = "Start time not defined";
+        String end = "End time cannot be calculated";
+        if (startTime != null) {
+            start = startTime.format(FORMATTER);
+        }
+        if (getEndTime() != null) {
+            end = getEndTime().format(FORMATTER);
+        }
+        return id + DELIMITER + type + DELIMITER + name + DELIMITER + status + DELIMITER
+                + description + DELIMITER + start + DELIMITER + duration + DELIMITER + end;
     }
 
     @Override
@@ -32,12 +51,33 @@ public class Task {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return id == task.id && name.equals(task.name) && description.equals(task.description) && status.equals(task.status);
+        return id == task.id && name.equals(task.name)
+                && description.equals(task.description) && status.equals(task.status);
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        Task task = (Task) o;
+        if ((this.startTime == null) && (task.getStartTime() == null)) {
+            return id - task.getId();
+        } else if (this.startTime == null) {
+            return 1;
+        } else if (task.getStartTime() == null) {
+            return -1;
+        }
+        return this.startTime.compareTo(task.getStartTime());
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(name, description, status, id);
+    }
+
+    public LocalDateTime getEndTime() {
+        if (startTime != null) {
+            return startTime.plusMinutes(duration);
+        }
+        return null;
     }
 
     public String getName() {
@@ -56,11 +96,11 @@ public class Task {
         this.description = description;
     }
 
-    public Status getStatus() {
+    public TaskStatus getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(TaskStatus status) {
         this.status = status;
     }
 
@@ -72,11 +112,27 @@ public class Task {
         this.id = id;
     }
 
-    public Type getType() {
+    public TaskType getType() {
         return type;
     }
 
-    public void setType(Type type) {
+    public void setType(TaskType type) {
         this.type = type;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 }

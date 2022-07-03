@@ -1,0 +1,8 @@
+id,type,name,status,description,startTime,duration,endTime,epic
+1,TASK,NAME_1,DONE,DESCRIPTION_1,Start time not defined,60,End time cannot be calculated
+3,TASK,NAME_3,IN_PROGRESS,DESCRIPTION_3,Start time not defined,60,End time cannot be calculated
+0,EPIC,NAME_0,NEW,DESCRIPTION_0,Start time not defined,0,End time cannot be calculated
+4,EPIC,NAME_4,NEW,DESCRIPTION_04,Start time not defined,0,End time cannot be calculated
+2,SUBTASK,NAME_2,NEW,DESCRIPTION_2,Start time not defined,10,End time cannot be calculated,0
+
+1,3,2,0

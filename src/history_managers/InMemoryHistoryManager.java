@@ -2,7 +2,6 @@ package history_managers;
 
 import tasks.Task;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +12,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     private Node tail;
     private final Map<Integer, Node> history = new HashMap<>();
 
-    // добавление новой задачи в конец двусвязного списка
+    // Добавление новой задачи в конец двусвязного списка
     public void linkLast(Task task) {
         final Node newTail = new Node(task, tail, null);
         if (head == null) {
@@ -24,6 +23,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         tail = newTail;
     }
 
+    // Метод возвращает список задач из двусвязного списка в List, в порядке их вызова, начиная с первой.
     public List<Task> getTasks() {
         List<Task> tasks = new ArrayList<>();
         Node currentNode = head;
@@ -34,8 +34,12 @@ public class InMemoryHistoryManager implements HistoryManager {
         return tasks;
     }
 
-    // метод удаляет узел из списка
+    // Метод удаляет узел из списка
     public void removeNode(Node node) {
+        if (node.previous == null && node.next == null) {
+            head = null;
+            return;
+        }
         if (node.previous != null) {
             node.previous.next = node.next;
             if (node.next == null) {
@@ -50,6 +54,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
+    // Добавление задачи в историю. В первую очередь удаляется прошлый вызов задачи.
     @Override
     public void add(Task task) {
         remove(task.getId());
@@ -57,6 +62,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         history.put(task.getId(), tail);
     }
 
+    // Удаление задачи из двусвязного списка и таблицы.
     @Override
     public void remove(int id) {
         if (history.containsKey(id)) {
@@ -65,6 +71,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
+    // Метод возвращает список задач в порядке их вызова, начиная с первой
     @Override
     public List<Task> getHistory() {
         return getTasks();

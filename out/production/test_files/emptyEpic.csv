@@ -1,0 +1,8 @@
+id,type,name,status,description,startTime,duration,endTime,epic
+1,TASK,NAME_1,DONE,DESCRIPTION_1,12:00 - 01.01.2022,60,13:00 - 01.01.2022
+2,TASK,NAME_2,NEW,DESCRIPTION_2,15:00 - 01.01.2022,10,15:10 - 01.01.2022
+3,TASK,NAME_3,IN_PROGRESS,DESCRIPTION_3,09:00 - 01.01.2022,60,10:00 - 01.01.2022
+0,EPIC,NAME_0,NEW,DESCRIPTION_0,Start time not defined,0,End time cannot be calculated
+4,EPIC,NAME_4,NEW,DESCRIPTION_04,Start time not defined,0,End time cannot be calculated
+
+4,0
