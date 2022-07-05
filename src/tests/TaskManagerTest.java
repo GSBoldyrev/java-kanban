@@ -19,20 +19,53 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     private T manager;
     private final static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm - dd.MM.yyyy");
+    private Task task_1;
+    private Task task_2;
+    private Epic epic_1;
+    private Epic epic_2;
+    private SubTask subTask_1;
+    private SubTask subTask_2;
+    private SubTask subTask_3;
+    private SubTask subTask_4;
+    private SubTask subTask_5;
 
     public abstract T createManager();
 
     @BeforeEach
     public void updateManager() {
         manager = createManager();
+        task_1 = new Task("T1", "TD1", TaskStatus.NEW, 15, null);
+        task_2 = new Task("T2", "TD2", TaskStatus.NEW, 15, null);
+        epic_1 = new Epic("E1", "ED1");
+        epic_2 = new Epic("E2", "ED2");
+        subTask_1 = new SubTask("S1", "SD1", TaskStatus.NEW, 0, 15, null);
+        subTask_2 = new SubTask("S2", "SD2", TaskStatus.NEW, 0, 15, null);
+        subTask_3 = new SubTask("S3", "SD3", TaskStatus.NEW, 0, 15, null);
+        subTask_4 = new SubTask("S4", "SD4", TaskStatus.NEW, 0, 15, null);
+        subTask_5 = new SubTask("S5", "SD5", TaskStatus.NEW, 0, 15, null);
+    }
+
+    public void add2TestTasks() {
+        manager.addTask(task_1);
+        manager.addTask(task_2);
+    }
+
+    public void add2TestEpics() {
+        manager.addEpic(epic_1);
+        manager.addEpic(epic_2);
+    }
+
+    public void add5TestSubTasks() {
+        manager.addSubTask(subTask_1);
+        manager.addSubTask(subTask_2);
+        manager.addSubTask(subTask_3);
+        manager.addSubTask(subTask_4);
+        manager.addSubTask(subTask_5);
     }
 
     @Test
     public void deleteAllTasks() {
-        Task task_1 = new Task("УБОРКА", "МЫТЬ ПОЛЫ");
-        Task task_2 = new Task("ИГРА", "АВАЛОН");
-        manager.addTask(task_1);
-        manager.addTask(task_2);
+        add2TestTasks();
         Assertions.assertEquals(2, manager.getAllTasks().size());
         manager.deleteAllTasks();
         Assertions.assertEquals(0, manager.getAllTasks().size());
@@ -40,26 +73,12 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void deleteAllSubTasks() {
-        Epic epic_1 = new Epic("УБОРКА", "КУХНЯ");
-        Epic epic_2 = new Epic("ИГРА", "НАСТОЛКИ");
-        manager.addEpic(epic_1);
-        manager.addEpic(epic_2);
+        add2TestEpics();
         Assertions.assertEquals(2, manager.getAllEpics().size());
-        SubTask first = new SubTask("ПОЛЫ", "МЫТЬ", epic_1.getId());
-        first.setStatus(TaskStatus.NEW);
-        SubTask second = new SubTask("ПЫЛЬ", "ВЫТИРАТЬ", epic_1.getId());
-        second.setStatus(TaskStatus.NEW);
-        SubTask third = new SubTask("МАРС", "ЕВРО", epic_2.getId());
-        third.setStatus(TaskStatus.NEW);
-        SubTask fourth = new SubTask("ДЮНА", "АРЕАКОНТРОЛЬ", epic_2.getId());
-        fourth.setStatus(TaskStatus.NEW);
-        SubTask fifth = new SubTask("ТАЛИСМАН", "АМЕРИ", epic_2.getId());
-        fifth.setStatus(TaskStatus.NEW);
-        manager.addSubTask(first);
-        manager.addSubTask(second);
-        manager.addSubTask(third);
-        manager.addSubTask(fourth);
-        manager.addSubTask(fifth);
+        subTask_3.setEpicId(1);
+        subTask_4.setEpicId(1);
+        subTask_5.setEpicId(1);
+        add5TestSubTasks();
         Assertions.assertEquals(5, manager.getAllSubTasks().size());
         manager.deleteAllSubTasks();
         Assertions.assertEquals(0, manager.getAllSubTasks().size());
@@ -69,26 +88,12 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void deleteAllEpics() {
-        Epic epic_1 = new Epic("УБОРКА", "КУХНЯ");
-        Epic epic_2 = new Epic("ИГРА", "НАСТОЛКИ");
-        manager.addEpic(epic_1);
-        manager.addEpic(epic_2);
+        add2TestEpics();
         Assertions.assertEquals(2, manager.getAllEpics().size());
-        SubTask first = new SubTask("ПОЛЫ", "МЫТЬ", epic_1.getId());
-        first.setStatus(TaskStatus.NEW);
-        SubTask second = new SubTask("ПЫЛЬ", "ВЫТИРАТЬ", epic_1.getId());
-        second.setStatus(TaskStatus.NEW);
-        SubTask third = new SubTask("МАРС", "ЕВРО", epic_2.getId());
-        third.setStatus(TaskStatus.NEW);
-        SubTask fourth = new SubTask("ДЮНА", "АРЕАКОНТРОЛЬ", epic_2.getId());
-        fourth.setStatus(TaskStatus.NEW);
-        SubTask fifth = new SubTask("ТАЛИСМАН", "АМЕРИ", epic_2.getId());
-        fifth.setStatus(TaskStatus.NEW);
-        manager.addSubTask(first);
-        manager.addSubTask(second);
-        manager.addSubTask(third);
-        manager.addSubTask(fourth);
-        manager.addSubTask(fifth);
+        subTask_3.setEpicId(1);
+        subTask_4.setEpicId(1);
+        subTask_5.setEpicId(1);
+        add5TestSubTasks();
         Assertions.assertEquals(5, manager.getAllSubTasks().size());
         manager.deleteAllEpics();
         Assertions.assertEquals(0, manager.getAllEpics().size());
@@ -97,7 +102,6 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void shouldAddTaskWithNormalConditions() {
-        Task task_1 = new Task("УБОРКА", "МЫТЬ ПОЛЫ");
         int id = manager.addTask(task_1);
         Task savedTask = manager.getTask(id);
         Assertions.assertNotNull(savedTask, "Задача не сохранилась");
@@ -112,10 +116,10 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void shouldNotAddTaskWithTimeIntersection() {
-        Task task_1 = new Task("УБОРКА", "МЫТЬ ПОЛЫ", TaskStatus.NEW,
-                60, LocalDateTime.parse("12:00 - 01.01.2022", FORMATTER));
-        Task task_2 = new Task("ИГРА", "АВАЛОН", TaskStatus.NEW,
-                60, LocalDateTime.parse("12:30 - 01.01.2022", FORMATTER));
+        task_1.setDuration(60);
+        task_1.setStartTime(LocalDateTime.parse("12:00 - 01.01.2022", FORMATTER));
+        task_2.setDuration(60);
+        task_2.setStartTime(LocalDateTime.parse("12:30 - 01.01.2022", FORMATTER));
         int id_1 = manager.addTask(task_1);
         int id_2 = manager.addTask(task_2);
         Assertions.assertEquals(0, id_1);
@@ -124,7 +128,6 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void shouldAddEpicWithNormalConditions() {
-        Epic epic_1 = new Epic("УБОРКА", "КУХНЯ");
         int id = manager.addEpic(epic_1);
         Epic savedEpic = manager.getEpic(id);
         Assertions.assertNotNull(savedEpic, "Задача не сохранилась");
@@ -140,15 +143,12 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-   public void shouldAddSubTaskWithNormalConditions() {
-        Epic epic_1 = new Epic("УБОРКА", "КУХНЯ");
-        int epicId = manager.addEpic(epic_1);
-        SubTask subTask = new SubTask("ПОЛЫ", "МЫТЬ", epicId);
-        subTask.setStatus(TaskStatus.NEW);
-        int id = manager.addSubTask(subTask);
+    public void shouldAddSubTaskWithNormalConditions() {
+        manager.addEpic(epic_1);
+        int id = manager.addSubTask(subTask_1);
         SubTask savedSubTask = manager.getSubTask(id);
         Assertions.assertNotNull(savedSubTask, "Задача не сохранилась");
-        Assertions.assertEquals(savedSubTask, subTask);
+        Assertions.assertEquals(savedSubTask, subTask_1);
         Assertions.assertEquals(1, manager.getAllSubTasks().size());
         Assertions.assertEquals(1, epic_1.getSubTasks().size());
     }
@@ -161,324 +161,237 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void shouldNotAddSubTaskWithTimeIntersection() {
-        Epic epic_1 = new Epic("УБОРКА", "КУХНЯ");
-        int epicId = manager.addEpic(epic_1);
-        SubTask first = new SubTask("ПОЛЫ", "МЫТЬ",
-                TaskStatus.NEW, epicId, 30, LocalDateTime.parse("13:00 - 01.01.2022", FORMATTER));
-        int id_1 = manager.addSubTask(first);
-        SubTask second = new SubTask("ПЫЛЬ", "ВЫТИРАТЬ",
-                TaskStatus.NEW, epicId, 60, LocalDateTime.parse("13:00 - 01.01.2022", FORMATTER));
-        int id_2 = manager.addSubTask(second);
-        Assertions.assertEquals(0, epicId);
+        manager.addEpic(epic_1);
+        subTask_1.setStartTime(LocalDateTime.parse("13:00 - 01.01.2022", FORMATTER));
+        int id_1 = manager.addSubTask(subTask_1);
+        subTask_2.setStartTime(LocalDateTime.parse("13:00 - 01.01.2022", FORMATTER));
+        int id_2 = manager.addSubTask(subTask_2);
         Assertions.assertEquals(1, id_1);
         Assertions.assertEquals(-2, id_2);
     }
+
     @Test
     public void shouldNotAddSubtaskWithoutEpic() {
-        SubTask subTask = new SubTask("ПОЛЫ", "МЫТЬ", 1);
-        int id = manager.addSubTask(subTask);
+        int id = manager.addSubTask(subTask_1);
         Assertions.assertEquals(-2, id);
     }
 
     @Test
     public void shouldUpdateTaskWithNormalConditions() {
-        Task task_1 = new Task("ИГРА", "АВАЛОН");
         int id = manager.addTask(task_1);
-        Task task_2 = new Task("ИГРА", "НЕЧТО");
         task_2.setId(id);
         int updatedId = manager.updateTask(task_2);
         Task savedTask = manager.getTask(updatedId);
         Assertions.assertNotNull(savedTask, "Задача не сохранилась");
         Assertions.assertEquals(savedTask, task_2);
         Assertions.assertEquals(1, manager.getAllTasks().size());
-        Assertions.assertEquals("НЕЧТО", manager.getTask(id).getDescription());
+        Assertions.assertEquals("TD2", manager.getTask(id).getDescription());
         Assertions.assertEquals(id, updatedId);
     }
 
     @Test
     public void shouldUpdateTaskWithSameStartTime() {
-        Task task_1 = new Task("УБОРКА", "МЫТЬ ПОЛЫ", TaskStatus.NEW,
-                60, LocalDateTime.parse("12:00 - 01.01.2022", FORMATTER));
+        task_1.setStartTime(LocalDateTime.parse("12:00 - 01.01.2022", FORMATTER));
         int id = manager.addTask(task_1);
-        Task task_2 = new Task("ИГРА", "АВАЛОН", TaskStatus.NEW,
-                60, LocalDateTime.parse("12:00 - 01.01.2022", FORMATTER));
         task_2.setId(id);
+        task_2.setStartTime(LocalDateTime.parse("12:00 - 01.01.2022", FORMATTER));
         int updatedId = manager.updateTask(task_2);
         Assertions.assertEquals(0, updatedId);
     }
 
     @Test
     public void shouldNotUpdateTaskToNull() {
-        Task task_1 = new Task("ИГРА", "АВАЛОН");
-        manager.addTask(task_1);
         int updated_id = manager.updateTask(null);
         Assertions.assertEquals(-2, updated_id);
     }
 
     @Test
     public void shouldNotUpdateTaskWithWrongId() {
-        Task task_1 = new Task("ИГРА", "АВАЛОН");
         int id = manager.addTask(task_1);
-        Task task_2 = new Task("ИГРА", "НЕЧТО");
-        task_2.setId(id+1);
+        task_2.setId(id + 1);
         int updateId = manager.updateTask(task_2);
         Assertions.assertEquals(-3, updateId);
     }
 
     @Test
     public void shouldNotUpdateTaskWithTimeIntersection() {
-        Task task_1 = new Task("УБОРКА", "МЫТЬ ПОЛЫ", TaskStatus.NEW,
-                60, LocalDateTime.parse("12:00 - 01.01.2022", FORMATTER));
-        int id_1 = manager.addTask(task_1);
-        Task task_2 = new Task("КУХНЯ", "ОБЕД", TaskStatus.NEW,
+        task_1.setStartTime(LocalDateTime.parse("12:00 - 01.01.2022", FORMATTER));
+        task_2.setStartTime(LocalDateTime.parse("14:00 - 01.01.2022", FORMATTER));
+        add2TestTasks();
+        Task task_3 = new Task("T3", "TD3", TaskStatus.NEW,
                 60, LocalDateTime.parse("14:00 - 01.01.2022", FORMATTER));
-        manager.addTask(task_2);
-        Task updatedTAsk = new Task("ИГРА", "АВАЛОН", TaskStatus.NEW,
-                60, LocalDateTime.parse("14:00 - 01.01.2022", FORMATTER));
-        updatedTAsk.setId(id_1);
-        int updatedId = manager.updateTask(updatedTAsk);
+        task_3.setId(task_1.getId());
+        int updatedId = manager.updateTask(task_3);
         Assertions.assertEquals(-2, updatedId);
     }
 
     @Test
     public void shouldUpdateSubTaskWithNormalConditions() {
-        Epic epic = new Epic("УБОРКА", "КУХНЯ");
-        int epicId = manager.addEpic(epic);
-        SubTask subTask = new SubTask("ПОЛЫ", "МЫТЬ", epicId);
-        int id = manager.addSubTask(subTask);
-        SubTask updatedSubTask = new SubTask("ЗЕРКАЛА", "ВЫТИРАТЬ", epicId);
-        updatedSubTask.setId(id);
-        int updatedId = manager.updateSubTask(updatedSubTask);
+        manager.addEpic(epic_1);
+        int id = manager.addSubTask(subTask_1);
+        subTask_2.setId(id);
+        int updatedId = manager.updateSubTask(subTask_2);
         SubTask savedSubTask = manager.getSubTask(updatedId);
         Assertions.assertNotNull(savedSubTask, "Задача не сохранилась");
-        Assertions.assertEquals(savedSubTask, updatedSubTask);
+        Assertions.assertEquals(savedSubTask, subTask_2);
         Assertions.assertEquals(1, manager.getAllSubTasks().size());
-        Assertions.assertEquals("ЗЕРКАЛА", manager.getSubTask(id).getName());
+        Assertions.assertEquals("S2", manager.getSubTask(id).getName());
     }
 
     @Test
     public void shouldNotUpdateSubtaskWithoutEpic() {
-        Epic epic = new Epic("УБОРКА", "КУХНЯ");
-        int epicId = manager.addEpic(epic);
-        SubTask subTask = new SubTask("ПОЛЫ", "МЫТЬ", epicId);
-        int id = manager.addSubTask(subTask);
-        SubTask updatedSubTask = new SubTask("ЗЕРКАЛА", "ВЫТИРАТЬ", (epicId+1));
-        updatedSubTask.setId(id);
-        int updatedId = manager.updateSubTask(updatedSubTask);
+        manager.addEpic(epic_1);
+        int id = manager.addSubTask(subTask_1);
+        subTask_2.setEpicId(1);
+        subTask_2.setId(id);
+        int updatedId = manager.updateSubTask(subTask_2);
         Assertions.assertEquals(1, manager.getAllSubTasks().size());
         Assertions.assertEquals(-2, updatedId);
     }
 
     @Test
     public void shouldUpdateSubTaskWithSameStartTime() {
-        Epic epic = new Epic("УБОРКА", "КУХНЯ");
-        int epicId = manager.addEpic(epic);
-        SubTask subTask = new SubTask("ПОЛЫ", "МЫТЬ", TaskStatus.NEW, epicId,
-                60, LocalDateTime.parse("12:00 - 01.01.2022", FORMATTER));
-        int id = manager.addSubTask(subTask);
-        SubTask updatedSubTask = new SubTask("ЗЕРКАЛА", "ВЫТИРАТЬ", TaskStatus.NEW, epicId,
-                60, LocalDateTime.parse("12:00 - 01.01.2022", FORMATTER));
-        updatedSubTask.setId(id);
-        int updatedId = manager.updateSubTask(updatedSubTask);
+        manager.addEpic(epic_1);
+        subTask_1.setStartTime(LocalDateTime.parse("12:00 - 01.01.2022", FORMATTER));
+        int id = manager.addSubTask(subTask_1);
+        subTask_2.setStartTime(LocalDateTime.parse("12:00 - 01.01.2022", FORMATTER));
+        subTask_2.setId(id);
+        int updatedId = manager.updateSubTask(subTask_2);
         Assertions.assertEquals(1, manager.getAllSubTasks().size());
         Assertions.assertEquals(id, updatedId);
     }
 
     @Test
     public void shouldNotUpdateNullSubTask() {
-        Epic epic = new Epic("УБОРКА", "КУХНЯ");
-        int epicId = manager.addEpic(epic);
-        SubTask subTask = new SubTask("ПОЛЫ", "МЫТЬ", epicId);
-        int id = manager.addSubTask(subTask);
         int updatedId = manager.updateSubTask(null);
-        Assertions.assertEquals(1, id);
         Assertions.assertEquals(-2, updatedId);
     }
 
     @Test
     public void shouldNotUpdateSubTaskWithWrongId() {
-        Epic epic = new Epic("УБОРКА", "КУХНЯ");
-        int epicId = manager.addEpic(epic);
-        SubTask subTask = new SubTask("ПОЛЫ", "МЫТЬ", epicId);
-        int id = manager.addSubTask(subTask);
-        SubTask updatedSubTask = new SubTask("ЗЕРКАЛА", "ВЫТИРАТЬ", epicId);
-        updatedSubTask.setId(id+1);
-        int updatedId = manager.updateSubTask(updatedSubTask);
+        manager.addEpic(epic_1);
+        int id = manager.addSubTask(subTask_1);
+        subTask_2.setId(id + 1);
+        int updatedId = manager.updateSubTask(subTask_2);
         Assertions.assertEquals(1, manager.getAllSubTasks().size());
         Assertions.assertEquals(-3, updatedId);
     }
 
     @Test
     public void shouldNotUpdateSubTaskWithTimeIntersection() {
-        Epic epic = new Epic("УБОРКА", "КУХНЯ");
-        int epicId = manager.addEpic(epic);
-        SubTask subTask_1 = new SubTask("ПОЛЫ", "МЫТЬ", TaskStatus.NEW, epicId,
-                60, LocalDateTime.parse("12:00 - 01.01.2022", FORMATTER));
+        manager.addEpic(epic_1);
+        subTask_1.setStartTime(LocalDateTime.parse("12:00 - 01.01.2022", FORMATTER));
+        subTask_2.setStartTime(LocalDateTime.parse("14:00 - 01.01.2022", FORMATTER));
+        subTask_3.setStartTime(LocalDateTime.parse("14:00 - 01.01.2022", FORMATTER));
         int id_1 = manager.addSubTask(subTask_1);
-        SubTask subTask_2 = new SubTask("ПЫЛЬ", "ВЫТИРАТЬ", TaskStatus.NEW, epicId,
-                60, LocalDateTime.parse("14:00 - 01.01.2022", FORMATTER));
         manager.addSubTask(subTask_2);
-        SubTask updatedSubTask = new SubTask("ЗЕРКАЛА", "ВЫТИРАТЬ", TaskStatus.NEW, epicId,
-                60, LocalDateTime.parse("14:00 - 01.01.2022", FORMATTER));
-        updatedSubTask.setId(id_1);
-        int updatedId = manager.updateSubTask(updatedSubTask);
+        subTask_3.setId(id_1);
+        int updatedId = manager.updateSubTask(subTask_3);
         Assertions.assertEquals(2, manager.getAllSubTasks().size());
         Assertions.assertEquals(-2, updatedId);
     }
 
     @Test
     public void shouldUpdateEpicWithNormalConditions() {
-        Epic epic_1 = new Epic("УБОРКА", "КУХНЯ");
-        int epicId = manager.addEpic(epic_1);
-        SubTask first = new SubTask("ПОЛЫ", "МЫТЬ", epicId);
-        first.setStatus(TaskStatus.DONE);
-        manager.addSubTask(first);
-        SubTask second = new SubTask("ПЫЛЬ", "ВЫТИРАТЬ", epicId);
-        second.setStatus(TaskStatus.DONE);
-        manager.addSubTask(second);
-        Assertions.assertEquals(TaskStatus.DONE, manager.getEpic(epicId).getStatus());
-        Assertions.assertEquals(2, manager.getEpic(epicId).getSubTasks().size());
+        manager.addEpic(epic_1);
+        subTask_1.setStatus(TaskStatus.DONE);
+        subTask_2.setStatus(TaskStatus.DONE);
+        manager.addSubTask(subTask_1);
+        manager.addSubTask(subTask_2);
+        Assertions.assertEquals(TaskStatus.DONE, manager.getEpic(0).getStatus());
+        Assertions.assertEquals(2, manager.getEpic(0).getSubTasks().size());
         Assertions.assertEquals(2, manager.getAllSubTasks().size());
-        Epic epic_2 = new Epic("УБОРКА", "КОРИДОР");
-        epic_2.setId(epicId);
+        epic_2.setId(0);
         int updatedId = manager.updateEpic(epic_2);
-        Epic savedEpic = manager.getEpic(epicId);
+        Epic savedEpic = manager.getEpic(0);
         Assertions.assertNotNull(savedEpic, "Задача не сохранилась");
         Assertions.assertEquals(TaskStatus.NEW, manager.getEpic(updatedId).getStatus());
         Assertions.assertEquals(0, manager.getEpic(updatedId).getSubTasks().size());
-        Assertions.assertEquals("КОРИДОР", manager.getEpic(updatedId).getDescription());
+        Assertions.assertEquals("ED2", manager.getEpic(updatedId).getDescription());
         Assertions.assertEquals(0, manager.getAllSubTasks().size());
-        Assertions.assertEquals(epicId, updatedId);
+        Assertions.assertEquals(0, updatedId);
     }
 
     @Test
     public void shouldNotUpdateNullEpic() {
-        Epic epic_1 = new Epic("УБОРКА", "КУХНЯ");
-        int epicId = manager.addEpic(epic_1);
-        Assertions.assertEquals(0, epicId);
         int updatedId = manager.updateEpic(null);
         Assertions.assertEquals(-2, updatedId);
     }
 
     @Test
     public void shouldNotUpdateEpicWithWrongId() {
-        Epic epic_1 = new Epic("УБОРКА", "КУХНЯ");
         int epicId = manager.addEpic(epic_1);
-        SubTask first = new SubTask("ПОЛЫ", "МЫТЬ", epicId);
-        first.setStatus(TaskStatus.DONE);
-        manager.addSubTask(first);
-        SubTask second = new SubTask("ПЫЛЬ", "ВЫТИРАТЬ", epicId);
-        second.setStatus(TaskStatus.DONE);
-        manager.addSubTask(second);
-        Assertions.assertEquals(TaskStatus.DONE, manager.getEpic(epicId).getStatus());
-        Assertions.assertEquals(2, manager.getEpic(epicId).getSubTasks().size());
-        Assertions.assertEquals(2, manager.getAllSubTasks().size());
-        Epic epic_2 = new Epic("УБОРКА", "КОРИДОР");
-        epic_2.setId(epicId+1);
+        epic_2.setId(epicId + 1);
         int updatedId = manager.updateEpic(epic_2);
         Assertions.assertEquals(-3, updatedId);
     }
 
     @Test
     public void shouldRemoveTaskWIthNormalConditions() {
-        Task task = new Task("УБОРКА", "МЫТЬ ПОЛЫ");
-        int id = manager.addTask(task);
+        int id = manager.addTask(task_1);
         Assertions.assertEquals(1, manager.getAllTasks().size());
         Task removedTask = manager.removeTask(id);
         Assertions.assertEquals(0, manager.getAllTasks().size());
         Assertions.assertNull(manager.getTask(id));
-        Assertions.assertEquals(task, removedTask);
+        Assertions.assertEquals(task_1, removedTask);
     }
 
     @Test
     public void shouldNotRemoveTaskWithWrongId() {
-        Task task = new Task("УБОРКА", "МЫТЬ ПОЛЫ");
-        int id = manager.addTask(task);
-        Assertions.assertEquals(1, manager.getAllTasks().size());
-        Task removedTask = manager.removeTask(id+1);
-        Assertions.assertEquals(1, manager.getAllTasks().size());
+        Task removedTask = manager.removeTask(1);
         Assertions.assertNull(removedTask);
     }
 
     @Test
-   public void shouldRemoveSubTaskWithNormalConditions() {
-        Epic epic_1 = new Epic("УБОРКА", "КУХНЯ");
-        int epicId = manager.addEpic(epic_1);
-        SubTask subTask = new SubTask("ПОЛЫ", "МЫТЬ", epicId);
-        subTask.setStatus(TaskStatus.DONE);
-        int id = manager.addSubTask(subTask);
+    public void shouldRemoveSubTaskWithNormalConditions() {
+        manager.addEpic(epic_1);
+        subTask_1.setStatus(TaskStatus.DONE);
+        int id = manager.addSubTask(subTask_1);
         Assertions.assertEquals(1, manager.getAllSubTasks().size());
-        Assertions.assertEquals(1, manager.getEpic(epicId).getSubTasks().size());
+        Assertions.assertEquals(1, manager.getEpic(0).getSubTasks().size());
         SubTask removedSubTask = (SubTask) manager.removeSubTask(id);
-        Assertions.assertEquals(TaskStatus.NEW, manager.getEpic(epicId).getStatus());
+        Assertions.assertEquals(TaskStatus.NEW, manager.getEpic(0).getStatus());
         Assertions.assertEquals(0, manager.getAllSubTasks().size());
-        Assertions.assertEquals(0, manager.getEpic(epicId).getSubTasks().size());
+        Assertions.assertEquals(0, manager.getEpic(0).getSubTasks().size());
         Assertions.assertNull(manager.getSubTask(id));
-        Assertions.assertEquals(subTask, removedSubTask);
+        Assertions.assertEquals(subTask_1, removedSubTask);
     }
 
     @Test
     public void shouldNotRemoveSubTaskWithWrongId() {
-        Epic epic_1 = new Epic("УБОРКА", "КУХНЯ");
-        int epicId = manager.addEpic(epic_1);
-        SubTask subTask = new SubTask("ПОЛЫ", "МЫТЬ", epicId);
-        subTask.setStatus(TaskStatus.DONE);
-        int id = manager.addSubTask(subTask);
-        Assertions.assertEquals(1, manager.getAllSubTasks().size());
-        Assertions.assertEquals(1, manager.getEpic(epicId).getSubTasks().size());
-        SubTask removedSubTask = (SubTask) manager.removeSubTask(id+1);
-        Assertions.assertEquals(TaskStatus.DONE, manager.getEpic(epicId).getStatus());
-        Assertions.assertEquals(1, manager.getAllSubTasks().size());
-        Assertions.assertEquals(1, manager.getEpic(epicId).getSubTasks().size());
+        manager.addEpic(epic_1);
+        int id = manager.addSubTask(subTask_1);
+        SubTask removedSubTask = (SubTask) manager.removeSubTask(id + 1);
         Assertions.assertNull(removedSubTask);
     }
 
     @Test
     public void shouldRemoveEpicWithNormalConditions() {
-        Epic epic_1 = new Epic("УБОРКА", "КУХНЯ");
-        int epicId = manager.addEpic(epic_1);
-        SubTask first = new SubTask("ПОЛЫ", "МЫТЬ", epicId);
-        first.setStatus(TaskStatus.DONE);
-        manager.addSubTask(first);
-        SubTask second = new SubTask("ПЫЛЬ", "ВЫТИРАТЬ", epicId);
-        second.setStatus(TaskStatus.DONE);
-        manager.addSubTask(second);
+        manager.addEpic(epic_1);
+        manager.addSubTask(subTask_1);
+        manager.addSubTask(subTask_2);
         Assertions.assertEquals(1, manager.getAllEpics().size());
         Assertions.assertEquals(2, manager.getAllSubTasks().size());
-        Epic removedEpic = (Epic) manager.removeEpic(epicId);
+        Epic removedEpic = (Epic) manager.removeEpic(0);
         Assertions.assertEquals(0, manager.getAllEpics().size());
         Assertions.assertEquals(0, manager.getAllSubTasks().size());
-        Assertions.assertNull(manager.getEpic(epicId));
+        Assertions.assertNull(manager.getEpic(0));
         Assertions.assertEquals(epic_1, removedEpic);
     }
 
     @Test
     public void shouldNotRemoveEpicWithWrongId() {
-        Epic epic_1 = new Epic("УБОРКА", "КУХНЯ");
         int epicId = manager.addEpic(epic_1);
-        SubTask first = new SubTask("ПОЛЫ", "МЫТЬ", epicId);
-        first.setStatus(TaskStatus.DONE);
-        manager.addSubTask(first);
-        SubTask second = new SubTask("ПЫЛЬ", "ВЫТИРАТЬ", epicId);
-        second.setStatus(TaskStatus.DONE);
-        manager.addSubTask(second);
         Assertions.assertEquals(1, manager.getAllEpics().size());
-        Assertions.assertEquals(2, manager.getAllSubTasks().size());
-        Epic removedEpic = (Epic) manager.removeEpic(epicId+1);
+        Epic removedEpic = (Epic) manager.removeEpic(epicId + 1);
         Assertions.assertEquals(1, manager.getAllEpics().size());
-        Assertions.assertEquals(2, manager.getAllSubTasks().size());
         Assertions.assertNull(removedEpic);
     }
 
     @Test
     public void getAllTasks() {
-        Task task_1 = new Task("УБОРКА", "МЫТЬ ПОЛЫ");
-        Task task_2 = new Task("ИГРА", "АВАЛОН");
         Assertions.assertEquals(0, manager.getAllTasks().size());
-        int id_1 = manager.addTask(task_1);
-        Assertions.assertEquals(1, manager.getAllTasks().size());
-        Assertions.assertTrue(manager.getAllTasks().contains(task_1));
-        int id_2 = manager.addTask(task_2);
+        add2TestTasks();
         Assertions.assertEquals(2, manager.getAllTasks().size());
         Assertions.assertTrue(manager.getAllTasks().contains(task_1));
         Assertions.assertTrue(manager.getAllTasks().contains(task_2));
@@ -486,31 +399,21 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void getAllSubTasks() {
-        Epic epic_1 = new Epic("УБОРКА", "КУХНЯ");
-        int epicId = manager.addEpic(epic_1);
-        SubTask first = new SubTask("ПОЛЫ", "МЫТЬ", epicId);
-        first.setStatus(TaskStatus.DONE);
+        manager.addEpic(epic_1);
         Assertions.assertEquals(0, manager.getAllSubTasks().size());
-        manager.addSubTask(first);
+        manager.addSubTask(subTask_1);
         Assertions.assertEquals(1, manager.getAllSubTasks().size());
-        Assertions.assertTrue(manager.getAllSubTasks().contains(first));
-        SubTask second = new SubTask("ПЫЛЬ", "ВЫТИРАТЬ", epicId);
-        second.setStatus(TaskStatus.DONE);
-        manager.addSubTask(second);
+        Assertions.assertTrue(manager.getAllSubTasks().contains(subTask_1));
+        manager.addSubTask(subTask_2);
         Assertions.assertEquals(2, manager.getAllSubTasks().size());
-        Assertions.assertTrue(manager.getAllSubTasks().contains(first));
-        Assertions.assertTrue(manager.getAllSubTasks().contains(second));
+        Assertions.assertTrue(manager.getAllSubTasks().contains(subTask_1));
+        Assertions.assertTrue(manager.getAllSubTasks().contains(subTask_2));
     }
 
     @Test
     public void getAllEpics() {
-        Epic epic_1 = new Epic("УБОРКА", "КУХНЯ");
-        Epic epic_2 = new Epic("ИГРА", "НАСТОЛКИ");
         Assertions.assertEquals(0, manager.getAllEpics().size());
-        manager.addEpic(epic_1);
-        Assertions.assertEquals(1, manager.getAllEpics().size());
-        Assertions.assertTrue(manager.getAllEpics().contains(epic_1));
-        manager.addEpic(epic_2);
+        add2TestEpics();
         Assertions.assertEquals(2, manager.getAllEpics().size());
         Assertions.assertTrue(manager.getAllEpics().contains(epic_1));
         Assertions.assertTrue(manager.getAllEpics().contains(epic_2));
@@ -518,7 +421,6 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void getTask() {
-        Task task_1 = new Task("УБОРКА", "МЫТЬ ПОЛЫ");
         int id_1 = manager.addTask(task_1);
         Assertions.assertEquals(task_1, manager.getTask(id_1));
         Assertions.assertNull(manager.getTask(45));
@@ -526,53 +428,41 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void getSubTask() {
-        Epic epic = new Epic("УБОРКА", "КУХНЯ");
-        int epicId = manager.addEpic(epic);
-        SubTask subTask = new SubTask("ПОЛЫ", "МЫТЬ", epicId);
-        subTask.setStatus(TaskStatus.DONE);
-        int id = manager.addSubTask(subTask);
-        Assertions.assertEquals(subTask, manager.getSubTask(id));
+        manager.addEpic(epic_1);
+        int id = manager.addSubTask(subTask_1);
+        Assertions.assertEquals(subTask_1, manager.getSubTask(id));
         Assertions.assertNull(manager.getSubTask(45));
     }
 
     @Test
     public void getEpic() {
-        Epic epic = new Epic("УБОРКА", "КУХНЯ");
-        int id = manager.addEpic(epic);
-        Assertions.assertEquals(epic, manager.getEpic(id));
+        int id = manager.addEpic(epic_1);
+        Assertions.assertEquals(epic_1, manager.getEpic(id));
         Assertions.assertNull(manager.getTask(45));
     }
 
     @Test
     public void getSubTasksFromEpic() {
-        Epic epic = new Epic("УБОРКА", "КУХНЯ");
-        int epicId = manager.addEpic(epic);
-        SubTask first = new SubTask("ПОЛЫ", "МЫТЬ", epic.getId());
-        first.setStatus(TaskStatus.NEW);
-        SubTask second = new SubTask("ПЫЛЬ", "ВЫТИРАТЬ", epic.getId());
-        second.setStatus(TaskStatus.NEW);
-        int id_1 = manager.addSubTask(first);
-        int id_2 = manager.addSubTask(second);
-        List<SubTask> fromEpic = manager.getSubTasksFromEpic(epicId);
+        manager.addEpic(epic_1);
+        manager.addSubTask(subTask_1);
+        manager.addSubTask(subTask_2);
+        List<SubTask> fromEpic = manager.getSubTasksFromEpic(0);
         Assertions.assertTrue(manager.getAllSubTasks().containsAll(fromEpic));
-        Assertions.assertTrue(fromEpic.contains(first));
+        Assertions.assertTrue(fromEpic.contains(subTask_1));
         Assertions.assertEquals(2, fromEpic.size());
     }
 
     @Test
     public void shouldNotGetSubTasksFromEpicWithWrongId() {
-        Epic epic = new Epic("УБОРКА", "КУХНЯ");
-        int epicId = manager.addEpic(epic);
+        int epicId = manager.addEpic(epic_1);
         List<SubTask> fromEpic = manager.getSubTasksFromEpic(epicId + 1);
         Assertions.assertNull(fromEpic);
     }
 
     @Test
     public void getHistory() {
-        Epic epic = new Epic("УБОРКА", "КУХНЯ");
-        int epicId = manager.addEpic(epic);
-        Task task = new Task("ИГРА", "АВАЛОН");
-        int id = manager.addTask(task);
+        int epicId = manager.addEpic(epic_1);
+        int id = manager.addTask(task_1);
         Assertions.assertEquals(0, manager.getHistory().size());
         Task firstCall = manager.getTask(id);
         Assertions.assertEquals(1, manager.getHistory().size());
@@ -584,31 +474,16 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void getPrioritizedTasks() {
-        Task task_1 = new Task("T1", "TD1", TaskStatus.NEW, 15,
-                LocalDateTime.parse("10:00 - 01.01.2022", FORMATTER));
-        Task task_2 = new Task("T2", "TD2", TaskStatus.NEW, 15,
-                LocalDateTime.parse("12:00 - 01.01.2022", FORMATTER));
-        int id_0 = manager.addTask(task_1);
-        int id_1 = manager.addTask(task_2);
-        Epic epic_1 = new Epic("E1", "ED1");
-        Epic epic_2 = new Epic("E2", "ED2");
-        int id_2 = manager.addEpic(epic_1);
-        int id_3 = manager.addEpic(epic_2);
-        SubTask first = new SubTask("S1", "SD1", TaskStatus.NEW, id_2, 15,
-                LocalDateTime.parse("10:30 - 01.01.2022", FORMATTER));
-        SubTask second = new SubTask("S2", "SD2", TaskStatus.NEW, id_2, 15,
-                LocalDateTime.parse("13:00 - 01.01.2022", FORMATTER));
-        SubTask third = new SubTask("S3", "SD3", TaskStatus.NEW, id_3, 15,
-                LocalDateTime.parse("11:30 - 01.01.2022", FORMATTER));
-        SubTask fourth = new SubTask("S4", "SD4", TaskStatus.NEW, id_3, 15,
-                LocalDateTime.parse("12:30 - 01.01.2022", FORMATTER));
-        SubTask fifth = new SubTask("S5", "SD5", TaskStatus.NEW, id_3, 15,
-                LocalDateTime.parse("11:00 - 01.01.2022", FORMATTER));
-        int id_4 = manager.addSubTask(first);
-        int id_5 = manager.addSubTask(second);
-        int id_6 = manager.addSubTask(third);
-        int id_7 = manager.addSubTask(fourth);
-        int id_8 = manager.addSubTask(fifth);
+        task_1.setStartTime(LocalDateTime.parse("10:00 - 01.01.2022", FORMATTER));
+        task_2.setStartTime(LocalDateTime.parse("12:00 - 01.01.2022", FORMATTER));
+        add2TestEpics();
+        add2TestTasks();
+        subTask_1.setStartTime(LocalDateTime.parse("10:30 - 01.01.2022", FORMATTER));
+        subTask_2.setStartTime(LocalDateTime.parse("13:00 - 01.01.2022", FORMATTER));
+        subTask_3.setStartTime(LocalDateTime.parse("11:30 - 01.01.2022", FORMATTER));
+        subTask_4.setStartTime(LocalDateTime.parse("12:30 - 01.01.2022", FORMATTER));
+        subTask_5.setStartTime(LocalDateTime.parse("11:00 - 01.01.2022", FORMATTER));
+        add5TestSubTasks();
         Set<Task> prioritized = manager.getPrioritizedTasks();
         System.out.println(prioritized);
         Assertions.assertTrue(prioritized.containsAll(manager.getAllTasks()));
@@ -616,61 +491,43 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         Assertions.assertEquals(7, prioritized.size());
         List<Task> tester = new ArrayList<>();
         tester.add(task_1);
-        tester.add(first);
-        tester.add(fifth);
-        tester.add(third);
+        tester.add(subTask_1);
+        tester.add(subTask_5);
+        tester.add(subTask_3);
         tester.add(task_2);
-        tester.add(fourth);
-        tester.add(second);
+        tester.add(subTask_4);
+        tester.add(subTask_2);
         int i = 0;
-        for (Task task: prioritized) {
-           Assertions.assertEquals(task, tester.get(i));
-           i++;
+        for (Task task : prioritized) {
+            Assertions.assertEquals(task, tester.get(i));
+            i++;
         }
     }
 
     @Test
     public void getPrioritizedTasksWithSomeNullTimes() {
-        Task task_1 = new Task("T1", "TD1", TaskStatus.NEW, 15,
-                null);
-        Task task_2 = new Task("T2", "TD2", TaskStatus.NEW, 15,
-                LocalDateTime.parse("12:00 - 01.01.2022", FORMATTER));
-        int id_0 = manager.addTask(task_1);
-        int id_1 = manager.addTask(task_2);
-        Epic epic_1 = new Epic("E1", "ED1");
-        Epic epic_2 = new Epic("E2", "ED2");
-        int id_2 = manager.addEpic(epic_1);
-        int id_3 = manager.addEpic(epic_2);
-        SubTask first = new SubTask("S1", "SD1", TaskStatus.NEW, id_2, 15,
-                LocalDateTime.parse("10:30 - 01.01.2022", FORMATTER));
-        SubTask second = new SubTask("S2", "SD2", TaskStatus.NEW, id_2, 15,
-                null);
-        SubTask third = new SubTask("S3", "SD3", TaskStatus.NEW, id_3, 15,
-                LocalDateTime.parse("11:30 - 01.01.2022", FORMATTER));
-        SubTask fourth = new SubTask("S4", "SD4", TaskStatus.NEW, id_3, 15,
-                null);
-        SubTask fifth = new SubTask("S5", "SD5", TaskStatus.NEW, id_3, 15,
-                LocalDateTime.parse("11:00 - 01.01.2022", FORMATTER));
-        int id_4 = manager.addSubTask(first);
-        int id_5 = manager.addSubTask(second);
-        int id_6 = manager.addSubTask(third);
-        int id_7 = manager.addSubTask(fourth);
-        int id_8 = manager.addSubTask(fifth);
+        task_2.setStartTime(LocalDateTime.parse("12:00 - 01.01.2022", FORMATTER));
+        add2TestEpics();
+        add2TestTasks();
+        subTask_1.setStartTime(LocalDateTime.parse("10:30 - 01.01.2022", FORMATTER));
+        subTask_3.setStartTime(LocalDateTime.parse("11:30 - 01.01.2022", FORMATTER));
+        subTask_5.setStartTime(LocalDateTime.parse("11:00 - 01.01.2022", FORMATTER));
+        add5TestSubTasks();
         Set<Task> prioritized = manager.getPrioritizedTasks();
         System.out.println(prioritized);
         Assertions.assertTrue(prioritized.containsAll(manager.getAllTasks()));
         Assertions.assertTrue(prioritized.containsAll(manager.getAllSubTasks()));
         Assertions.assertEquals(7, prioritized.size());
         List<Task> tester = new ArrayList<>();
-        tester.add(first);
-        tester.add(fifth);
-        tester.add(third);
+        tester.add(subTask_1);
+        tester.add(subTask_5);
+        tester.add(subTask_3);
         tester.add(task_2);
         tester.add(task_1);
-        tester.add(second);
-        tester.add(fourth);
+        tester.add(subTask_2);
+        tester.add(subTask_4);
         int i = 0;
-        for (Task task: prioritized) {
+        for (Task task : prioritized) {
             Assertions.assertEquals(task, tester.get(i));
             i++;
         }

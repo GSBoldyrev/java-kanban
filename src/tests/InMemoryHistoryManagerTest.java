@@ -10,6 +10,10 @@ import java.util.List;
 
 class InMemoryHistoryManagerTest {
     private InMemoryHistoryManager manager;
+    private Task task_1;
+    private Task task_2;
+    private Task task_3;
+    private Task task_4;
 
     public InMemoryHistoryManager createManager() {
         return new InMemoryHistoryManager();
@@ -18,12 +22,18 @@ class InMemoryHistoryManagerTest {
     @BeforeEach
     public void updateManager() {
         manager = createManager();
+        task_1 = new Task("T1", "D1");
+        task_1.setId(1);
+        task_2 = new Task("T2", "D2");
+        task_2.setId(2);
+        task_3 = new Task("T3", "D3");
+        task_3.setId(3);
+        task_4 = new Task("T4", "D4");
+        task_4.setId(4);
     }
 
     @Test
     public void shouldAddOneTask() {
-        Task task_1 = new Task("T1", "D1");
-        task_1.setId(1);
         manager.add(task_1);
         Assertions.assertEquals(1, manager.getHistory().size());
         Assertions.assertTrue(manager.getHistory().contains(task_1));
@@ -31,10 +41,6 @@ class InMemoryHistoryManagerTest {
 
     @Test
     public void shouldAdd2DifferentTasks() {
-        Task task_1 = new Task("T1", "D1");
-        task_1.setId(1);
-        Task task_2 = new Task("T2", "D2");
-        task_2.setId(2);
         manager.add(task_1);
         manager.add(task_2);
         Assertions.assertEquals(2, manager.getHistory().size());
@@ -44,9 +50,6 @@ class InMemoryHistoryManagerTest {
 
     @Test
     public void shouldAdd2TasksWithSameIdAndKeepLastOne() {
-        Task task_1 = new Task("T1", "D1");
-        task_1.setId(1);
-        Task task_2 = new Task("T2", "D2");
         task_2.setId(1);
         manager.add(task_1);
         Assertions.assertEquals(1, manager.getHistory().size());
@@ -58,11 +61,7 @@ class InMemoryHistoryManagerTest {
 
     @Test
     public void shouldAdd2TasksWithSameIdAndOneAnother() {
-        Task task_1 = new Task("T1", "D1");
-        task_1.setId(1);
-        Task task_2 = new Task("T2", "D2");
         task_2.setId(1);
-        Task task_3 = new Task("T3", "D3");
         task_3.setId(2);
         manager.add(task_1);
         Assertions.assertEquals(1, manager.getHistory().size());
@@ -78,8 +77,6 @@ class InMemoryHistoryManagerTest {
 
     @Test
     public void shouldRemoveAloneTask() {
-        Task task_1 = new Task("T1", "D1");
-        task_1.setId(1);
         manager.add(task_1);
         Assertions.assertEquals(1, manager.getHistory().size());
         Assertions.assertTrue(manager.getHistory().contains(task_1));
@@ -90,12 +87,6 @@ class InMemoryHistoryManagerTest {
 
     @Test
     public void shouldRemoveFirstTask() {
-        Task task_1 = new Task("T1", "D1");
-        task_1.setId(1);
-        Task task_2 = new Task("T2", "D2");
-        task_2.setId(2);
-        Task task_3 = new Task("T3", "D3");
-        task_3.setId(3);
         manager.add(task_1);
         manager.add(task_2);
         manager.add(task_3);
@@ -108,12 +99,6 @@ class InMemoryHistoryManagerTest {
 
     @Test
     public void shouldRemoveMiddleTask() {
-        Task task_1 = new Task("T1", "D1");
-        task_1.setId(1);
-        Task task_2 = new Task("T2", "D2");
-        task_2.setId(2);
-        Task task_3 = new Task("T3", "D3");
-        task_3.setId(3);
         manager.add(task_1);
         manager.add(task_2);
         manager.add(task_3);
@@ -126,12 +111,6 @@ class InMemoryHistoryManagerTest {
 
     @Test
     public void shouldRemoveLastTask() {
-        Task task_1 = new Task("T1", "D1");
-        task_1.setId(1);
-        Task task_2 = new Task("T2", "D2");
-        task_2.setId(2);
-        Task task_3 = new Task("T3", "D3");
-        task_3.setId(3);
         manager.add(task_1);
         manager.add(task_2);
         manager.add(task_3);
@@ -150,14 +129,6 @@ class InMemoryHistoryManagerTest {
 
     @Test
     public void shouldGetHistoryFrom1To4() {
-        Task task_1 = new Task("T1", "D1");
-        task_1.setId(1);
-        Task task_2 = new Task("T2", "D2");
-        task_2.setId(2);
-        Task task_3 = new Task("T3", "D3");
-        task_3.setId(3);
-        Task task_4 = new Task("T4", "D4");
-        task_4.setId(4);
         manager.add(task_1);
         manager.add(task_2);
         manager.add(task_3);
@@ -172,14 +143,6 @@ class InMemoryHistoryManagerTest {
 
     @Test
     public void shouldGetHistoryFrom4To1() {
-        Task task_1 = new Task("T1", "D1");
-        task_1.setId(1);
-        Task task_2 = new Task("T2", "D2");
-        task_2.setId(2);
-        Task task_3 = new Task("T3", "D3");
-        task_3.setId(3);
-        Task task_4 = new Task("T4", "D4");
-        task_4.setId(4);
         manager.add(task_4);
         manager.add(task_3);
         manager.add(task_2);
@@ -194,14 +157,8 @@ class InMemoryHistoryManagerTest {
 
     @Test
     public void shouldGetHistoryFrom2To1() {
-        Task task_1 = new Task("T1", "D1");
         task_1.setId(4);
-        Task task_2 = new Task("T2", "D2");
         task_2.setId(3);
-        Task task_3 = new Task("T3", "D3");
-        task_3.setId(3);
-        Task task_4 = new Task("T4", "D4");
-        task_4.setId(4);
         manager.add(task_4);
         manager.add(task_3);
         manager.add(task_2);

@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
-public class Task implements Comparable {
+public class Task  {
 
     private String name;
     private String description;
@@ -53,19 +53,6 @@ public class Task implements Comparable {
         Task task = (Task) o;
         return id == task.id && name.equals(task.name)
                 && description.equals(task.description) && status.equals(task.status);
-    }
-
-    @Override
-    public int compareTo(Object o) {
-        Task task = (Task) o;
-        if ((this.startTime == null) && (task.getStartTime() == null)) {
-            return id - task.getId();
-        } else if (this.startTime == null) {
-            return 1;
-        } else if (task.getStartTime() == null) {
-            return -1;
-        }
-        return this.startTime.compareTo(task.getStartTime());
     }
 
     @Override

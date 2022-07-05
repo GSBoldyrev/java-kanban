@@ -1,15 +1,13 @@
 package task_managers;
 
-import exceptions.EpicNotFoundException;
-import exceptions.NullTaskException;
 import exceptions.TaskNotFoundException;
 import exceptions.TimeIntersectionException;
 import history_managers.HistoryManager;
 import misc.Managers;
 import tasks.Epic;
-import tasks.TaskStatus;
 import tasks.SubTask;
 import tasks.Task;
+import tasks.TaskStatus;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -18,7 +16,16 @@ public class InMemoryTaskManager implements TaskManager {
     protected final Map<Integer, Task> tasks = new HashMap<>();
     protected final Map<Integer, SubTask> subTasks = new HashMap<>();
     protected final Map<Integer, Epic> epics = new HashMap<>();
-    protected final Set<Task> prioritizedTasks = new TreeSet<>();
+    protected final Set<Task> prioritizedTasks = new TreeSet<>((o1, o2) -> {
+        if ((o1.getStartTime() == null) && (o2.getStartTime() == null)) {
+            return o1.getId() - o2.getId();
+        } else if (o1.getStartTime() == null) {
+            return 1;
+        } else if (o2.getStartTime() == null) {
+            return -1;
+        }
+        return o1.getStartTime().compareTo(o2.getStartTime());
+    });
     protected final HistoryManager historyManager = Managers.getDefaultHistory();
     private int id = 0;
 
@@ -38,6 +45,7 @@ public class InMemoryTaskManager implements TaskManager {
         for (int id : subTasks.keySet()) {
             historyManager.remove(id);
         }
+
         getAllSubTasks().forEach(prioritizedTasks::remove);
         subTasks.clear();
         for (int id : epics.keySet()) {
@@ -66,7 +74,7 @@ public class InMemoryTaskManager implements TaskManager {
         try {
             validateNotNull(task);
             validateTimes(task);
-        } catch (NullTaskException | TimeIntersectionException e) {
+        } catch (TaskNotFoundException | TimeIntersectionException e) {
             System.out.println(e.getMessage());
             return -2;
         }
@@ -81,7 +89,7 @@ public class InMemoryTaskManager implements TaskManager {
     public int addEpic(Epic epic) {
         try {
             validateNotNull(epic);
-        } catch (NullTaskException e) {
+        } catch (TaskNotFoundException e) {
             System.out.println(e.getMessage());
             return -2;
         }
@@ -97,7 +105,7 @@ public class InMemoryTaskManager implements TaskManager {
             validateNotNull(subTask);
             validateForEpic(subTask);
             validateTimes(subTask);
-        } catch (TimeIntersectionException | NullTaskException | EpicNotFoundException e) {
+        } catch (TimeIntersectionException | TaskNotFoundException e) {
             System.out.println(e.getMessage());
             return -2;
         }
@@ -120,14 +128,12 @@ public class InMemoryTaskManager implements TaskManager {
         try {
             validateNotNull(task);
             validateTimes(task);
-        } catch (TimeIntersectionException | NullTaskException e) {
+        } catch (TimeIntersectionException | TaskNotFoundException e) {
             System.out.println(e.getMessage());
             return -2;
         }
-        try {
-            validateId(task.getId(), getAllTasks());
-        } catch (TaskNotFoundException e) {
-            System.out.println(e.getMessage());
+        Task updatedTask = tasks.remove(task.getId());
+        if (updatedTask == null) {
             return -3;
         }
         tasks.put(task.getId(), task);
@@ -142,14 +148,12 @@ public class InMemoryTaskManager implements TaskManager {
             validateNotNull(subTask);
             validateForEpic(subTask);
             validateTimes(subTask);
-        } catch (TimeIntersectionException | NullTaskException | EpicNotFoundException e) {
+        } catch (TimeIntersectionException | TaskNotFoundException e) {
             System.out.println(e.getMessage());
             return -2;
         }
-        try {
-            validateId(subTask.getId(), getAllSubTasks());
-        } catch (TaskNotFoundException e) {
-            System.out.println(e.getMessage());
+        SubTask updatedSubTask = subTasks.remove(subTask.getId());
+        if (updatedSubTask == null) {
             return -3;
         }
         subTasks.put(subTask.getId(), subTask);
@@ -169,19 +173,17 @@ public class InMemoryTaskManager implements TaskManager {
     public int updateEpic(Epic epic) {
         try {
             validateNotNull(epic);
-        } catch (NullTaskException e) {
+        } catch (TaskNotFoundException e) {
             System.out.println(e.getMessage());
             return -2;
         }
-        try {
-            validateId(epic.getId(), getAllEpics());
-        } catch (TaskNotFoundException e) {
-            System.out.println(e.getMessage());
+        Epic updatedEpic = epics.remove(epic.getId());
+        if (updatedEpic == null) {
             return -3;
         }
         int id = epic.getId();
-        epics.get(id).getSubTasks().forEach(prioritizedTasks::remove);
-        epics.get(id).getSubTasks().forEach(subTasks.values()::remove);
+        updatedEpic.getSubTasks().forEach(prioritizedTasks::remove);
+        updatedEpic.getSubTasks().forEach(subTasks.values()::remove);
         epics.put(id, epic);
         return id;
     }
@@ -189,48 +191,39 @@ public class InMemoryTaskManager implements TaskManager {
     // Удаление задачи по идентификатору
     @Override
     public Task removeTask(int id) {
-        try {
-            validateId(id, getAllTasks());
-        } catch (TaskNotFoundException e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
         historyManager.remove(id);
         Task task = tasks.remove(id);
+        if(task == null) {
+            return null;
+        }
         prioritizedTasks.removeIf(task1 -> task1.getId() == id);
         return task;
     }
 
     @Override
     public Task removeSubTask(int id) {
-        try {
-            validateId(id, getAllSubTasks());
-        } catch (TaskNotFoundException e) {
-            System.out.println(e.getMessage());
+        historyManager.remove(id);
+        SubTask subTask = subTasks.remove(id);
+        if (subTask == null) {
             return null;
         }
-        historyManager.remove(id);
-        int epicId = subTasks.get(id).getEpicId();
+        int epicId = subTask.getEpicId();
         Epic epic = epics.get(epicId);
         List<SubTask> subTasks = epic.getSubTasks();
         subTasks.removeIf(task -> task.getId() == id);
-        Task task = this.subTasks.remove(id);
         prioritizedTasks.removeIf(task1 -> task1.getId() == id);
         setEpicStatus(epic);
         setEpicTimes(epic);
-        return task;
+        return subTask;
     }
 
     @Override
     public Task removeEpic(int id) {
-        try {
-            validateId(id, getAllEpics());
-        } catch (TaskNotFoundException e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
         historyManager.remove(id);
         Epic epic = epics.remove(id);
+        if (epic == null) {
+            return null;
+        }
         for (SubTask subTask : epic.getSubTasks()) {
             subTasks.remove(subTask.getId());
             historyManager.remove(subTask.getId());
@@ -263,50 +256,41 @@ public class InMemoryTaskManager implements TaskManager {
     // Получение задачи по идентификатору
     @Override
     public Task getTask(int id) {
-        try {
-            validateId(id, getAllTasks());
-        } catch (TaskNotFoundException e) {
-            System.out.println(e.getMessage());
+        Task task = tasks.get(id);
+        if (task == null) {
             return null;
         }
-        historyManager.add(tasks.get(id));
-        return tasks.get(id);
+        historyManager.add(task);
+        return task;
     }
 
     @Override
     public SubTask getSubTask(int id) {
-        try {
-            validateId(id, getAllSubTasks());
-        } catch (TaskNotFoundException e) {
-            System.out.println(e.getMessage());
+        SubTask subTask = subTasks.get(id);
+        if (subTask == null) {
             return null;
         }
-        historyManager.add(subTasks.get(id));
-        return subTasks.get(id);
+        historyManager.add(subTask);
+        return subTask;
     }
 
     @Override
     public Epic getEpic(int id) {
-        try {
-            validateId(id, getAllEpics());
-        } catch (TaskNotFoundException e) {
-            System.out.println(e.getMessage());
+        Epic epic = epics.get(id);
+        if (epic == null) {
             return null;
         }
-        historyManager.add(epics.get(id));
-        return epics.get(id);
+        historyManager.add(epic);
+        return epic;
     }
 
     // Получение списка всех подзадач Эпика
     @Override
     public List<SubTask> getSubTasksFromEpic(int id) {
-        try {
-            validateId(id, getAllEpics());
-        } catch (TaskNotFoundException e) {
-            System.out.println(e.getMessage());
+        Epic epic = epics.get(id);
+        if (epic == null) {
             return null;
         }
-        Epic epic = epics.get(id);
         return epic.getSubTasks();
     }
 
@@ -382,27 +366,17 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     // Валидатор, проверяющий задачу на null.
-    private void validateNotNull(Task task) throws NullTaskException {
+    private void validateNotNull(Task task) throws TaskNotFoundException {
         if (task == null) {
-            throw new NullTaskException("Задача не обнаружена");
+            throw new TaskNotFoundException("Задача не обнаружена");
         }
     }
 
     // Валидатор, проверяющий существует ли эпик для подзадачи.
-    private void validateForEpic(SubTask task) throws EpicNotFoundException {
+    private void validateForEpic(SubTask task) throws TaskNotFoundException {
         if (!epics.containsKey(task.getEpicId())) {
-            throw new EpicNotFoundException("Подзадача не относится к существующим Эпикам");
+            throw new TaskNotFoundException("Подзадача не относится к существующим Эпикам");
         }
-    }
-
-    // Валидатор, проверяющий наличие в менеджере задачи по ее ID.
-    private void validateId(int id, List<Task> list) throws TaskNotFoundException {
-        for (Task task : list) {
-            if (task.getId() == id) {
-                return;
-            }
-        }
-        throw new TaskNotFoundException("Задача с таким ID не найдена");
     }
 
     // Геттер для глобального ID, нужен для загрузки из файла.
