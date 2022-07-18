@@ -7,7 +7,7 @@ import java.util.Objects;
 
 public class Epic extends Task {
 
-    private List<SubTask> subTasks = new ArrayList<>();
+    private final List<SubTask> subTasks = new ArrayList<>();
     private LocalDateTime endTime;
 
     public Epic(String name, String description) {
@@ -90,10 +90,6 @@ public class Epic extends Task {
 
     public List<SubTask> getSubTasks() {
         return subTasks;
-    }
-
-    public void setSubTasks(List<SubTask> subTasks) {
-        this.subTasks = subTasks;
     }
 
     @Override

@@ -17,17 +17,17 @@ import java.util.Set;
 
 public abstract class TaskManagerTest<T extends TaskManager> {
 
-    private T manager;
+    protected T manager;
     private final static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm - dd.MM.yyyy");
-    private Task task_1;
-    private Task task_2;
-    private Epic epic_1;
-    private Epic epic_2;
-    private SubTask subTask_1;
-    private SubTask subTask_2;
-    private SubTask subTask_3;
-    private SubTask subTask_4;
-    private SubTask subTask_5;
+    protected Task task_1;
+    protected Task task_2;
+    protected Epic epic_1;
+    protected Epic epic_2;
+    protected SubTask subTask_1;
+    protected SubTask subTask_2;
+    protected SubTask subTask_3;
+    protected SubTask subTask_4;
+    protected SubTask subTask_5;
 
     public abstract T createManager();
 

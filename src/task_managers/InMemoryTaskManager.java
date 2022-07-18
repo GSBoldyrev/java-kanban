@@ -193,7 +193,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Task removeTask(int id) {
         historyManager.remove(id);
         Task task = tasks.remove(id);
-        if(task == null) {
+        if (task == null) {
             return null;
         }
         prioritizedTasks.removeIf(task1 -> task1.getId() == id);

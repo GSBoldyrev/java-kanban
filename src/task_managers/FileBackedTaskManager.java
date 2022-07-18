@@ -13,8 +13,11 @@ import java.util.Set;
 
 public class FileBackedTaskManager extends InMemoryTaskManager implements TaskManager {
 
-    File data;
+    public File data;
     protected final static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm - dd.MM.yyyy");
+
+    public FileBackedTaskManager() {
+    }
 
     public FileBackedTaskManager(File data) {
         this.data = data;
@@ -54,7 +57,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 putTask(task, manager);
             }
         }
-        // Все Эпики наполняются подзадачами, получают статус и тайминг.
+        // Все Эпики наполняются подзадачами, получают статус и времена.
         for (SubTask subtask : manager.subTasks.values()) {
             int epicId = subtask.getEpicId();
             manager.getSubTasksFromEpic(epicId).add(subtask);
@@ -77,7 +80,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     }
 
     // Метод сохранения менеджера в файл формата .CSV
-    private void save() {
+    protected void save() {
         try (FileWriter fileWriter = new FileWriter(data)) {
             fileWriter.write("id,type,name,status,description,startTime,duration,endTime,epic\n");
             for (Task task : getAllTasks()) {
@@ -100,7 +103,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
     private static Task fromString(String value) {
         String[] fields = value.split(",");
         switch (fields[1]) {
-            case "TASK":
+            case "TASK" -> {
                 Task task = new Task(fields[2], fields[4]);
                 task.setStatus(TaskStatus.valueOf(fields[3]));
                 task.setId(Integer.parseInt(fields[0]));
@@ -111,12 +114,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 }
                 task.setDuration(Integer.parseInt(fields[6]));
                 return task;
-            case "EPIC":
+            }
+            case "EPIC" -> {
                 Task epic = new Epic(fields[2], fields[4]);
                 epic.setStatus(TaskStatus.valueOf(fields[3]));
                 epic.setId(Integer.parseInt(fields[0]));
                 return epic;
-            case "SUBTASK":
+            }
+            case "SUBTASK" -> {
                 Task subtask = new SubTask(fields[2], fields[4], Integer.parseInt(fields[8]));
                 subtask.setStatus(TaskStatus.valueOf(fields[3]));
                 subtask.setId(Integer.parseInt(fields[0]));
@@ -127,6 +132,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements TaskMa
                 }
                 subtask.setDuration(Integer.parseInt(fields[6]));
                 return subtask;
+            }
         }
         return null;
     }

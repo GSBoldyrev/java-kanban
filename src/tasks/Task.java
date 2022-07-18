@@ -4,10 +4,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
-public class Task  {
+public class Task {
 
-    private String name;
-    private String description;
+    private final String name;
+    private final String description;
     private TaskType type = TaskType.TASK;
     private TaskStatus status = TaskStatus.NEW;
     private LocalDateTime startTime;
@@ -71,16 +71,8 @@ public class Task  {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public TaskStatus getStatus() {
